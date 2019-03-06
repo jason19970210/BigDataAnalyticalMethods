@@ -73,8 +73,8 @@ as.integer(gender)
 > [1] 55
 + sin
 > sin(pi/2)
-> [1] 1
-+ abs 絕對值
+> [1] 1
++ abs 絕對值
 > abs(-34)
 > [1] 34
 + exp 指數
