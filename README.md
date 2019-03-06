@@ -2,6 +2,7 @@
 
 ### 教師與課堂資訊
 + 曾意儒
++ github.com/CGUIM-BigDataAnalysis/BigDataCGUIM/blob/master/107/04_R_Prog_101.md
 
 ### Big Data 4V
 + Volume 數據產生的量
