@@ -3,6 +3,11 @@
 ### 教師與課堂資訊
 + 曾意儒
 
+### Big Data 4V
++ Volume 數據產生的量
++ Variety 數據的多樣性
++ Velocity 數據產生的速度
++ Veracity 數據的正確性
 
 ## R Lang.
 
