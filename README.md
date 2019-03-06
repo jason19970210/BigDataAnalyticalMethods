@@ -8,6 +8,11 @@
 + Variety 數據的多樣性
 + Velocity 數據產生的速度
 + Veracity 數據的正確性
+### Cloud Storage
++ AWS Amazon Web Service - Simple Storage Service(S3)
++ Azure
++ GCP Google Cloud Platform
+
 
 ## R Lang.
 
