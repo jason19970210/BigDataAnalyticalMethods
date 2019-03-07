@@ -59,7 +59,7 @@ c("Hello", "World")
 class(c("Hello", "World"))
 [1] "character"
 ```
-+ 因子向量
++ 因子向量 Factor
 ```R
 gender <- factor(c("male", "female", "male"))
 gender
