@@ -16,7 +16,7 @@
 
 
 ## R Lang.
-[pref](http://rbasicsworkshop.weebly.com/uploads/1/8/6/0/18603232/adler_2009_r-inanutshell.pdf)
+[pref_pdf_R_in_a_nutshell](http://rbasicsworkshop.weebly.com/uploads/1/8/6/0/18603232/adler_2009_r-inanutshell.pdf)
 
 ### Comment
 Using `#`
