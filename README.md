@@ -67,9 +67,12 @@ gender
 [1] male    female male
 Levels: female male
 ```
+
 使用 `levels` 來列出因子變數中所有的類別
 使用 `nlevels` 來計算因數變數類別的總數
 使用 `as.integer` 查詢名稱背後對應的一些整數資料
+使用 `table` 來計算 elements 的個數
+
 ```R
 levels(gender)
 [1] "female" "male"
@@ -85,7 +88,7 @@ as.integer(gender)
 > [1] 55
 + sin
 > sin(pi/2)
-> [1] 1
+> [1] 1
 + abs 絕對值
 > abs(-34)
 > [1] 34
@@ -95,4 +98,3 @@ as.integer(gender)
 + mid 中位數
 > median(1:5)
 > [1] 3
-
