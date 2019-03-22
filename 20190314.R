@@ -49,3 +49,40 @@ listSample <- list(Students=c("Tom","Kobe","Emma"),
 
 airquality
 table(airquality$Month)
+
+
+
+# `...` 是一個傳值變數
+
+score <- 80
+if (score < 60){
+  print("回家洗洗睡再戰下學年")
+} else if (score == 60 | score < 75){
+  print("低空飛過")
+} else if (score == 75 | score < 90){
+  print("普通")
+} else {
+  print("挑戰學霸")
+}
+
+iris$Type <- ifelse(iris$Sepal.Length > 5.5, "長" , "短")
+
+
+
+for (i in seq(1,20,2)){
+  if (i == 13){
+  } else {
+    print(i)
+  }
+}
+
+USArrests
+mur <- USArrests$Murder
+ass <- USArrests$Assault
+urb <- USArrests$UrbanPop
+
+USArrests$QOL <- ifelse(mur > 10, "不宜人居", ifelse(ass > 100, "要非常小心", ifelse(urb > 70, "很擠", "可以住")))
+       #ifelse(ass > 100, ifelse(USArrests$QOL), )
+             # ifelse(urb > 70, USArrvests$QOL <- "很擠", c- "可以住")))
+
+table(USArrests$QOL)
