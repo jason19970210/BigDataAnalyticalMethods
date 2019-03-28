@@ -82,7 +82,49 @@ ass <- USArrests$Assault
 urb <- USArrests$UrbanPop
 
 USArrests$QOL <- ifelse(mur > 10, "不宜人居", ifelse(ass > 100, "要非常小心", ifelse(urb > 70, "很擠", "可以住")))
-       #ifelse(ass > 100, ifelse(USArrests$QOL), )
-             # ifelse(urb > 70, USArrvests$QOL <- "很擠", c- "可以住")))
 
 table(USArrests$QOL)
+
+
+library(jsonlite)
+#library(rjson)
+library(RCurl)
+library(httr)
+#BikeAPIData<-fromJSON("http://data.tycg.gov.tw/api/v1/rest/datastore/a1b4714b-3b75-4ff8-a8f2-cc377e4eaa0f?format=json")
+#str(BikeAPIData)
+#BikeAPIDataDF <- data.frame(BikeAPIData$result$records)
+
+#taipeiWork <- fromJSON("http://data.taipei/opendata/datalist/apiAccess?scope=resourceAquire&rid=201d8ae8-dffc-4d17-ae1f-e58d8a95b162")
+#str(taipeiWork)
+#nrow(taipeiWork$result$results)
+
+library(rvest)
+library(magrittr)
+ppturl = "https://www.ptt.cc/bbs/Tech_Job/index.html"
+esliteurl = "http://www.eslite.com/lowest_list.aspx?cate=156"
+bookurl = "https://activity.books.com.tw/books66/?loc=activity_BK_001"
+
+ppthtmlContent <- read_html(ppturl)
+esliteContent <- read_html(esliteurl)
+bookContent <- read_html(bookurl)
+
+#xpath <- "/html/body/div[2]/div[2]/div[4]/div[2]/a"
+#xpath1 <- "/html[1]/body[1]/div[2]/div[2]/div[*]/div[2]/a[1]"
+#Google Chrome Extension > SelectorGadget
+
+#titlePath <- ".title a"
+#titles <- elitehtmlContent %>% html_nodes(".title a") %>% html_text()
+#titles1 <- bookContent %>% html_nodes(xpath = "//body/div[@class='container_24 clearfix']/div[@class='grid_24']/div[@id='content-fixed']/div[5]/div[1]/div[1]/div[2]/ul[1]/li[1]") %>% html_text()
+titles2 <- bookContent %>% html_nodes(xpath = "	//ul[@class='price clearfix']//b[contains(text(),'')]") %>% html_text()
+titles2
+titles_eslite <- esliteContent %>% html_nodes("h3 a") %>% html_text()
+titles_eslite
+
+titles_book <- bookContent %>% html_nodes("h4 a") %>% html_text()
+titles_price_count <- bookContent %>% html_nodes("#content-fixed div .clearfix li:nth-child(1)") %>% html_text()
+titles_price_count
+titles1
+
+xpathtest <- ppthtmlContent %>% html_nodes(xpath = "/html[1]/body[1]/div[2]/div[2]/div[*]/div[2]/a[1]") %>% html_text()
+xpathtest <- ppthtmlContent %>% html_nodes(xpath = "//a[contains(.,'')]") %>% html_text()
+xpathtest
