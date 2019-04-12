@@ -10,6 +10,7 @@
 + Variety 數據的多樣性
 + Velocity 數據產生的速度
 + Veracity 數據的正確性
+
 ### Cloud Storage
 + AWS Amazon Web Service - Simple Storage Service(S3)
 + Azure
@@ -99,3 +100,13 @@ as.integer(gender)
 + mid 中位數
 > median(1:5)
 > [1] 3
+
+### 爬蟲
+#### Extension (CSS Selector & XPath)
++ Google Extension: Seletorgadget
++ Firefox Extension: Scrapemate (Beta)
+---
++ using library `httr` for handle https
++ using library `jsonlite` to import json file 
++ reading `xml` file by using library `xml2`
++ 

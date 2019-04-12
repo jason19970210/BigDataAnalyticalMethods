@@ -128,3 +128,203 @@ titles1
 xpathtest <- ppthtmlContent %>% html_nodes(xpath = "/html[1]/body[1]/div[2]/div[2]/div[*]/div[2]/a[1]") %>% html_text()
 xpathtest <- ppthtmlContent %>% html_nodes(xpath = "//a[contains(.,'')]") %>% html_text()
 xpathtest
+
+
+
+library(rvest)
+library(stringr)
+DCardCGU<-"https://www.dcard.tw/f/cgu?latest=true"
+DCardContent<-read_html(DCardCGU, encoding = "UTF-8")
+post_title <- DCardContent %>% html_nodes(".PostEntry_unread_2U217-") %>% html_text()
+post_contentShort<- DCardContent %>% html_nodes(".PostEntry_reply_1oU-6z") %>% html_text()
+post_author<- DCardContent %>% html_nodes(".PostAuthor_root_3vAJfe") %>% html_text()
+post_comment<- DCardContent %>% html_nodes(".PostEntry_comments_2iY8V3") %>% html_text()
+post_like<- DCardContent %>% html_nodes(".hlvyVg") %>% html_text()
+post_url <- DCardContent %>% html_nodes(".PostEntry_entry_2rsgm") %>% html_attr("href")
+post_title<-gsub("[^[:alnum:]///' ]", "", post_title)
+DCardCGU_posts <- data.frame(title = post_title, author=post_author, 
+                             commentN=post_comment, likeN=post_like)
+knitr::kable(DCardCGU_posts)
+
+
+#Ref: https://github.com/soodoku/tuber
+#Ref: find functions from http://soodoku.github.io/tuber/reference/index.html
+#install.packages("devtools")
+#devtools::install_github("soodoku/tuber")
+library(tuber)
+#console.cloud.google.com
+#new a project and create oauth authorization key, active `Youtube Data API`
+clientID <- "101641719226-h9jl88pveeht1t6gb1i92ghkbsdvaeh3.apps.googleusercontent.com"
+clientKey <- "MQPsNf1PvLKICptIFT8GH1-w"
+yt_oauth(clientID,clientKey,token="")
+#auth failed may be cause by "httpuv" package
+#$ install.packages("Rfacebook")
+#or direct install `httpuv`
+#$ install.packages("httpuv")
+
+#set using method to `OTHER` instead of `WebClient`
+#then it will be fine
+#set redirect url inoAuth tag page from console.cloud.google.com where the project saved
+#add following lines into redirect url
+#http://localhost:1410/
+#http://localhost/authorize/
+
+
+stat <- get_stats(video_id = "wki0BqlztCo")
+data.frame(stat)
+detail <- get_video_details(video_id = "wki0BqlztCo")
+str(detail$items[[1]]$snippet)
+channelStat <- get_channel_stats(channel_id = "UCBa5G_ESCn8Yd4vw5U-gIcg")
+data.frame(channelStat)
+
+
+#===========================================
+#https://www.r-bloggers.com/using-the-tuber-package-to-analyse-a-youtube-channel/
+library(tuber)
+library(tidyverse)
+library(lubridate)
+library(stringi)
+library(wordcloud)
+library(gridExtra)
+
+#httr::set_config( config( ssl_verifypeer = 0L ) ) # = Fixes some certificate problems on linux = #
+
+# = Autentication = #
+clientID <- "101641719226-h9jl88pveeht1t6gb1i92ghkbsdvaeh3.apps.googleusercontent.com"
+clientKey <- "MQPsNf1PvLKICptIFT8GH1-w"
+yt_oauth(clientID,clientKey,token="")
+
+# = Download and prepare data = #
+
+# = Channel stats = #
+chstat = get_channel_stats("UCbZRdTukTCjFan4onn04sDA")
+
+# = Videos = #
+videos = yt_search(term="", type="video", channel_id = "UCbZRdTukTCjFan4onn04sDA")
+videos = videos %>%
+  mutate(date = as.Date(publishedAt)) %>%
+  filter(date > "2016-01-01") %>%
+  arrange(date)
+
+# = Comments = #
+comments = lapply(as.character(videos$video_id), function(x){
+  get_comment_threads(c(video_id = x), max_results = 1000)
+})
+
+# = Prep the data = #
+# = Video Stat Table = #
+videostats = lapply(as.character(videos$video_id), function(x){
+  get_stats(video_id = x)
+})
+videostats = do.call(rbind.data.frame, videostats)
+videostats$title = videos$title
+videostats$date = videos$date
+videostats = select(videostats, date, title, viewCount, likeCount, dislikeCount, commentCount) %>%
+  as.tibble() %>%
+  mutate(viewCount = as.numeric(as.character(viewCount)),
+         likeCount = as.numeric(as.character(likeCount)),
+         dislikeCount = as.numeric(as.character(dislikeCount)),
+         commentCount = as.numeric(as.character(commentCount)))
+
+# = General Stat Table = #
+genstat = data.frame(Channel="Dan Vasc", Subcriptions=chstat$statistics$subscriberCount,
+                     Views = chstat$statistics$viewCount,
+                     Videos = chstat$statistics$videoCount, Likes = sum(videostats$likeCount),
+                     Dislikes = sum(videostats$dislikeCount), Comments = sum(videostats$commentCount))
+
+# = videostats Plot = #
+p1 = ggplot(data = videostats[-1, ]) + geom_point(aes(x = viewCount, y = likeCount))
+p2 = ggplot(data = videostats[-1, ]) + geom_point(aes(x = viewCount, y = dislikeCount))
+p3 = ggplot(data = videostats[-1, ]) + geom_point(aes(x = viewCount, y = commentCount))
+grid.arrange(p1, p2, p3, ncol = 2)
+
+# = Comments TS = #
+comments_ts = lapply(comments, function(x){
+  as.Date(x$publishedAt)
+})
+comments_ts = tibble(date = as.Date(Reduce(c, comments_ts))) %>%
+  group_by(date) %>% count()
+ggplot(data = comments_ts) + geom_line(aes(x = date, y = n)) +
+  geom_smooth(aes(x = date, y = n), se = FALSE) + ggtitle("Comments by day")+
+  geom_vline(xintercept = as.numeric(as.Date("2017-11-08")), linetype = 2,color = "red")+
+  geom_vline(xintercept = as.numeric(as.Date("2017-04-28")), linetype = 2,color = "red")
+
+# = coments by video = #
+selected = (nrow(videostats) - 3):nrow(videostats)
+top4 = videostats$title[selected]
+top4comments = comments[selected]
+
+p = list()
+for(i in 1:4){
+  df = top4comments[[i]]
+  df$date = as.Date(df$publishedAt)
+  df = df %>%
+    arrange(date) %>%
+    group_by(year(date), month(date), day(date)) %>%
+    count()
+  df$date = make_date(df$`year(date)`, df$`month(date)`,df$`day(date)`)
+  p[[i]] = ggplot(data=df) + geom_line(aes(x = date, y = n)) + ggtitle(top4[i])
+}
+do.call(grid.arrange,p)
+
+## = WordClouds = ##
+comments_text = lapply(comments,function(x){
+  as.character(x$textOriginal)
+})
+comments_text = tibble(text = Reduce(c, comments_text)) %>%
+  mutate(text = stri_trans_general(tolower(text), "Latin-ASCII"))
+remove = c("you","the","que","and","your","muito","this","that","are","for","cara",
+           "from","very","like","have","voce","man","one","nao","com","with","mais",
+           "was","can","uma","but","ficou","meu","really","seu","would","sua","more",
+           "it's","it","is","all","i'm","mas","como","just","make","what","esse","how",
+           "por","favor","sempre","time","esta","every","para","i've","tem","will",
+           "you're","essa","not","faz","pelo","than","about","acho","isso",
+           "way","also","aqui","been","out","say","should","when","did","mesmo",
+           "minha","next","cha","pra","sei","sure","too","das","fazer","made",
+           "quando","ver","cada","here","need","ter","don't","este","has","tambem",
+           "una","want","ate","can't","could","dia","fiquei","num","seus","tinha","vez",
+           "ainda","any","dos","even","get","must","other","sem","vai","agora","desde",
+           "dessa","fez","many","most","tao","then","tudo","vou","ficaria","foi","pela",
+           "see","teu","those","were")
+words = tibble(word = Reduce(c, stri_extract_all_words(comments_text$text))) %>%
+  group_by(word) %>% count() %>% arrange(desc(n)) %>% filter(nchar(word) >= 3) %>%
+  filter(n > 10 & word %in% remove == FALSE) 
+
+set.seed(3)
+wordcloud(words$word, words$n, random.order = FALSE, random.color = TRUE,
+          rot.per = 0.3, colors = 1:nrow(words))
+
+#============================================
+
+
+library(RCurl)
+library(httr)
+library(rvest)
+uniqlourl = "http://www.uniqlo.com/tw/store/list/limited-offer/men/"
+
+uniqlohtmlContent <- read_html(uniqlourl)
+
+product_name <- uniqlohtmlContent %>% html_nodes(".name a") %>% html_text()
+product_price <- uniqlohtmlContent %>% html_nodes(".price") %>% html_text()
+product_url <- uniqlohtmlContent %>% html_nodes(".name a") %>% html_attr("href")
+#gsub(欲替換掉字串, 欲替換成, 參數)
+gsub(" |\n", "", product_price)
+uniqlodf<-data.frame(product_name,product_price,product_url)
+nrow(uniqlodf)
+
+
+#from mac using `xml2` package instead of using `XML` package
+library(xml2)
+openDataUrl <- "http://gis.taiwan.net.tw/XMLReleaseALL_public/scenic_spot_C_f.xml"
+openDataUrlContent <- read_xml(openDataUrl)
+# name <- openDataUrlContent %>% xml_find_all(openDataUrlContent, ".//Name") %>% xml_text()
+name <- xml_find_all(openDataUrlContent, ".//Name")
+name_text <- xml_text(name)
+orgclass <- xml_find_all(openDataUrlContent, ".//Orgclass")
+orgclass_text <- xml_text(orgclass)
+add <- xml_find_all(openDataUrlContent, ".//Add")
+add_text <- xml_text(add)
+opentime <- xml_find_all(openDataUrlContent, ".//Opentime")
+opentime_text <- xml_text(opentime)
+opendata_df <- data.frame(name=name_text,orgclass=orgclass_text,add=add_text,opentime=opentime_text)
+table(opendata_df$orgclass_text)
