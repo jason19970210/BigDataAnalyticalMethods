@@ -103,6 +103,7 @@ library(magrittr)
 ppturl = "https://www.ptt.cc/bbs/Tech_Job/index.html"
 esliteurl = "http://www.eslite.com/lowest_list.aspx?cate=156"
 bookurl = "https://activity.books.com.tw/books66/?loc=activity_BK_001"
+dacrdurl = "https://www.dcard.tw/f/cgu"
 
 ppthtmlContent <- read_html(ppturl)
 esliteContent <- read_html(esliteurl)
@@ -133,18 +134,67 @@ xpathtest
 
 library(rvest)
 library(stringr)
-DCardCGU<-"https://www.dcard.tw/f/cgu?latest=true"
-DCardContent<-read_html(DCardCGU, encoding = "UTF-8")
+DCardCGU<-"https://www.dcard.tw/f/cgu"
+#DCardContent<-read_html(DCardCGU, encoding = "UTF-8")
+DCardContent<-read_html(DCardCGU)
 post_title <- DCardContent %>% html_nodes(".PostEntry_unread_2U217-") %>% html_text()
-post_contentShort<- DCardContent %>% html_nodes(".PostEntry_reply_1oU-6z") %>% html_text()
+#post_contentShort<- DCardContent %>% html_nodes(".PostEntry_reply_1oU-6z") %>% html_text()
 post_author<- DCardContent %>% html_nodes(".PostAuthor_root_3vAJfe") %>% html_text()
-post_comment<- DCardContent %>% html_nodes(".PostEntry_comments_2iY8V3") %>% html_text()
+#post_comment<- DCardContent %>% html_nodes(".PostEntry_comments_2iY8V3") %>% html_text()
 post_like<- DCardContent %>% html_nodes(".hlvyVg") %>% html_text()
-post_url <- DCardContent %>% html_nodes(".PostEntry_entry_2rsgm") %>% html_attr("href")
+#post_url <- DCardContent %>% html_nodes(".PostEntry_entry_2rsgm") %>% html_attr("href")
 post_title<-gsub("[^[:alnum:]///' ]", "", post_title)
-DCardCGU_posts <- data.frame(title = post_title, author=post_author, 
-                             commentN=post_comment, likeN=post_like)
-knitr::kable(DCardCGU_posts)
+#DCardCGU_posts <- data.frame(title = post_title, author=post_author, 
+#                             commentN=post_comment, likeN=post_like)
+#stringsAsFactors = F
+#data.frame(column_name = 變數)
+DCardCGU_posts <- data.frame(title = post_title, author=post_author, likeN=post_like, stringsAsFactors = F)
+#DCardCGU_posts <- data.frame(title = post_title, author=post_author, likeN=post_like)
+#for writing document preview
+#knitr::kable(DCardCGU_posts)
+#check column class
+str(DCardCGU_posts)
+class(DCardCGU_posts$likeN)
+DCardCGU_posts$likeN <- as.numeric(DCardCGU_posts$likeN)
+str(DCardCGU_posts)
+
+library(rvest)
+library(purrr)
+ppturl_n <- paste0("https://www.ptt.cc/bbs/Tech_Job/index",n,".html")
+#ppturl_n <- paste0("https://www.ptt.cc/bbs/Tech_Job/index",3390:3400,".html")
+ppturl_n
+ppturl = "https://www.ptt.cc/bbs/Tech_Job/index.html"
+n <- 3390:3400
+#title1 <- read_html(ppturl_n[1]) %>% html_nodes(".title a") %>% html_text()
+
+nePage
+
+titleAll <- c()
+for (url in ppturl_n){
+  title1 <- read_html(url) %>% html_nodes(".title a") %>% html_text()
+  titleAll <- c(titleAll, title1)
+}
+x <- c()
+place <- grep("面試",titleAll)
+for (a in place){
+  print(titleAll[a])
+  x <- c(x,titleAll[a])
+}
+#ppthtmlContent <- read_html(ppturl_n)
+
+titleall <- c()
+function_get_ppt_title <- function (url) {
+  title2 <- read_html(url) %>% html_nodes(".title a") %>% html_text()
+  #titleall <- c(titleall, title2)
+  title2
+  #return(titleall)
+}
+
+function_get_ppt_title("https://www.ptt.cc/bbs/Tech_Job/index.html")
+xx <- map(ppturl_n,function_get_ppt_title)
+
+
+
 
 
 #Ref: https://github.com/soodoku/tuber
@@ -328,3 +378,10 @@ opentime <- xml_find_all(openDataUrlContent, ".//Opentime")
 opentime_text <- xml_text(opentime)
 opendata_df <- data.frame(name=name_text,orgclass=orgclass_text,add=add_text,opentime=opentime_text)
 table(opendata_df$orgclass_text)
+
+
+
+#做子集的三種方法：[ ]、$、subset
+#做子集時的篩選條件輸入：放布林、放名稱、放index
+
+
