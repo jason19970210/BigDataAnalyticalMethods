@@ -167,7 +167,7 @@ ppturl = "https://www.ptt.cc/bbs/Tech_Job/index.html"
 n <- 3390:3400
 #title1 <- read_html(ppturl_n[1]) %>% html_nodes(".title a") %>% html_text()
 
-nePage
+#newPage
 
 titleAll <- c()
 for (url in ppturl_n){
@@ -384,4 +384,16 @@ table(opendata_df$orgclass_text)
 #做子集的三種方法：[ ]、$、subset
 #做子集時的篩選條件輸入：放布林、放名稱、放index
 
+
+library(jsonlite)
+json_url <- "http://data.tycg.gov.tw/api/v1/rest/datastore/0daad6e6-0632-44f5-bd25-5e1de1e9146f?format=json"
+json <- fromJSON(json_url)
+park_df <- json$result$records
+park_place <- json$result$records$parkName
+select_park <- grep("公園", park_df$parkName)
+#for (i in select_park){
+#  print(park_place[i])
+#  print(json$result$records[i])
+#}
+aa <- park_df[select_park,]
 
