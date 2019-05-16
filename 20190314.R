@@ -397,3 +397,74 @@ select_park <- grep("公園", park_df$parkName)
 #}
 aa <- park_df[select_park,]
 
+
+library(dplyr)
+edu_origin <- read.csv("http://data.moi.gov.tw/MoiOD/System/DownloadFile.aspx?DATA=7DD5CC42-4EFA-4AFD-9004-AF576CB2B337",stringsAsFactors = F)
+pop_origin <- read.csv("http://data.moi.gov.tw/MoiOD/System/DownloadFile.aspx?DATA=46D0FA91-0159-47B9-BA49-D158F5FD4443",stringsAsFactors = F)
+
+edu <- edu_origin[2:nrow(edu_origin),]
+pop <- pop_origin[2:nrow(pop_origin),]
+
+
+edu_pop <- inner_join(pop,edu,by=c( "site_id", "village" = "village." ))
+
+edu_pop$birthrate <- as.integer(edu_pop$birth_total) / as.integer(edu_pop$edu_age_15up_total)
+edu_pop <- edu_pop[order(edu_pop$birthrate, decreasing=TRUE),]
+
+
+library(tidyr)
+#edu_origin <- read.csv("http://data.moi.gov.tw/MoiOD/System/DownloadFile.aspx?DATA=7DD5CC42-4EFA-4AFD-9004-AF576CB2B337",stringsAsFactors = F)
+#edu <- edu_origin[2:nrow(edu_origin),]
+# delete total colume
+edu_new <- edu[-5]
+edu_gather <- gather(edu_new, key = Class, value = Value, -statistic_yyy, -district_code, -site_id, -village.)
+
+library(tidyr)
+AType <- read.csv("https://raw.githubusercontent.com/CGUIM-BigDataAnalysis/BigDataCGUIM/master/104/HEPATITIS_A_Cases.csv", stringsAsFactors = F)
+AType_gather <- gather(AType, key = State, value = Value, -YEAR, -WEEK)
+AType_gather$Value <- as.integer(AType_gather$Value)
+# get non na value
+AType_gather <- AType_gather[!is.na(AType_gather$Value),]
+str(AType_gather)
+
+
+# 2019.05.16
+# rtestfinal <- strsplit(rtest, "[\n|\t|\r]+")
+# rtestfianl.1 <- mpa.
+
+library(SportsAnalytics)
+library(data.table)
+NBA1819<-fetch_NBAPlayerStatistics("18-19")
+NBA1819DT<-data.table(NBA1819)
+# 2 Methods
+# NBA1819<-fetch_NBAPlayerStatistics("18-19") %>% as.data.table()
+# NBA1819DT<-data.table(fetch_NBAPlayerStatistics("18-19"))
+NBA1819DT[TotalPoints>2000, .N]# in dplyr will be using n() to return the nunber of filter result
+# Output
+# [1] 6
+NBA1819DT[TotalPoints>2000,.(meanSteals = mean(Steals),
+                             meanTotalRebounds = mean(TotalRebounds))]
+
+library(dplyr)
+filter(NBA1819, TotalPoints>2000) %>% summarise(n(), # or use `nPlayers = n()`
+                                                meanSteals=mean(Steals),
+                                                meanTotalRebounds=mean(TotalRebounds))
+
+NBA1819DT[GamesPlayed > 50, .(meanSteals = mean(Steals),
+                              meanTotalRebounds = mean(TotalRebounds)), by = Position]
+
+group_by(NBA1819,Position) %>% filter(GamesPlayed > 50)  %>% summarise(meanSteals=mean(Steals),
+                                     meanTotalRebounds=mean(TotalRebounds))
+
+length(NBA1819$Team %>% unique())
+group_by(NBA1819,Team) %>% arrange(TotalPoints) %>% slice(1)
+
+mtTable<-table(mtcars$cyl,mtcars$am)
+mtTable
+chisq.test(mtTable) # X-squared = 8.7407, df = 2, p-value = 0.01265
+chisq.test(mtTable,simulate.p.value = T)
+chisq.test(mtTable, set.seed(1234))
+fisher.test(mtTable) # p-value = 0.009105, alternative hypothesis: two.sided
+
+
+
