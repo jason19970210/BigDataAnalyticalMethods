@@ -519,12 +519,12 @@ joined_df_103_to_106 <- inner_join(joined_df_103_to_106, df_106, by="大職業�
 # rename column names
 # http://rprogramming.net/rename-columns-in-r/
 # names(data) <- c("new_name", "another_new_name")
-names(joined_df_103_to_106) <- c("大職業別","College_f/m_103","College_f/m_104","College_f/m_105","College_f/m_106")
+names(joined_df_103_to_106) <- c("大職業別","College_f_m_103","College_f_m_104","College_f_m_105","College_f_m_106")
 #joined_df_103_to_106[2:5] <- as.numeric(joined_df_103_to_106[2:5])
-joined_df_103_to_106$`College_f/m_103` <- as.numeric(joined_df_103_to_106$`College_f/m_103`)
-joined_df_103_to_106$`College_f/m_104` <- as.numeric(joined_df_103_to_106$`College_f/m_104`)
-joined_df_103_to_106$`College_f/m_105` <- as.numeric(joined_df_103_to_106$`College_f/m_105`)
-joined_df_103_to_106$`College_f/m_106` <- as.numeric(joined_df_103_to_106$`College_f/m_106`)
+joined_df_103_to_106$`College_f_m_103` <- as.numeric(joined_df_103_to_106$`College_f_m_103`)
+joined_df_103_to_106$`College_f_m_104` <- as.numeric(joined_df_103_to_106$`College_f_m_104`)
+joined_df_103_to_106$`College_f_m_105` <- as.numeric(joined_df_103_to_106$`College_f_m_105`)
+joined_df_103_to_106$`College_f_m_106` <- as.numeric(joined_df_103_to_106$`College_f_m_106`)
 
 # replace `NA` to `0`
 # https://bbs.pinggu.org/thread-3589221-1-1.html
@@ -532,6 +532,59 @@ joined_df_103_to_106$`College_f/m_106` <- as.numeric(joined_df_103_to_106$`Colle
 joined_df_103_to_106[is.na(joined_df_103_to_106)] <- 0
 
 # order the table
-joined_df_103_to_106 <- arrange(joined_df_103_to_106,desc(College_f/m_103))
+joined_df_103_to_106 <- arrange(joined_df_103_to_106,desc(College_f_m_103))
+
+
+
+# histogram 直方圖 > 一維資料(x=連續變量,y=usually be count or frequency)
+# bar chart 長條圖 > 二維資料(x=類別變量,y=連續變量)
+
+
+qplot(data = NBA1819DT, x=NBA1819DT$Steals,y=NBA1819DT$TotalRebounds)
+ggplot(data = NBA1819DT, mapping=aes(x=Steals,y=TotalRebounds))+geom_point()+geom_smooth()
+cor(NBA1819DT$Steals,NBA1819DT$TotalRebounds) #計算相關係數
+# cor value > 0.8 : 高度相關
+# cor value < 0.3 : 低度相關
+# [1] 0.678612
+
+
+company_register <- read.csv("http://data.gcis.nat.gov.tw/od/file?oid=9D63D882-9B21-4FAA-9A10-2D5E0D938A47")
+company_register <- company_register[-c(1,2), ]
+cor1 <- cor(company_register$總計家數,company_register$總計資本額)
+plot <- ggplot(company_register, mapping = aes(總計家數, 總計資本額))+geom_point()+geom_smooth()+theme(text=element_text(family="PingFang TC Light", size=14))
+plot + annotate("text", x = 60000, y = 6000000, label = paste("r = ", cor1))
+
+library(jsonlite)
+animal_data <- fromJSON("http://data.coa.gov.tw/Service/OpenData/AnimalOpenData.aspx")
+animal_group <- group_by(animal_data,shelter_name,animal_kind)
+num <- summarise(animal_group, num = n())
+plot <- ggplot(num, aes(shelter_name,num))+geom_bar(stat = "identity")
+plot + coord_flip() + theme_set(theme_bw()) + theme(text=element_text(family="PingFang TC Light", size=6),axis.text.x = element_text(angle = 90, hjust = 1)) + facet_grid(animal_kind~.)
+
+#======================
+
+
+library(ggplot2)
+car_103_full <- read.csv("/Users/macbook/Desktop/三下/107bigdatacguimhw1-jason19970210/Input/103年各職類別初任人員經常性薪資－按行業別分.csv",stringsAsFactors = F)
+car_104_full <- read.csv("/Users/macbook/Desktop/三下/107bigdatacguimhw1-jason19970210/Input/104年各職類別初任人員經常性薪資－按行業別分.csv",stringsAsFactors = F)
+car_105_full <- read.csv("/Users/macbook/Desktop/三下/107bigdatacguimhw1-jason19970210/Input/105年各職類別初任人員每人每月經常性薪資－按行業別分.csv",stringsAsFactors = F)
+car_106_full <- read.csv("/Users/macbook/Desktop/三下/107bigdatacguimhw1-jason19970210/Input/106年各職類別初任人員每人每月經常性薪資－按行業別分.csv",stringsAsFactors = F)
+
+car_103 <- filter(car_103_full,行業別 %in% c("資訊及通訊傳播業","企業總管理機構及管理顧問業","電腦系統設計服務業","資料處理及資訊供應服務業","銀行業"))
+car_104 <- filter(car_104_full,行業別 %in% c("資訊及通訊傳播業","企業總管理機構及管理顧問業","電腦系統設計服務業","資料處理及資訊供應服務業","銀行業"))
+car_105 <- filter(car_105_full,行業別 %in% c("資訊及通訊傳播業","企業總管理機構及管理顧問業","電腦系統設計服務業","資料處理及資訊供應服務業","銀行業"))
+car_106 <- filter(car_106_full,行業別 %in% c("資訊及通訊傳播業","企業總管理機構及管理顧問業","電腦系統設計服務業","資料處理及資訊供應服務業","銀行業"))
+
+rbind_car <- rbind(car_103, car_104, car_105, car_106)
+for (i in 3:dim(rbind_car)[2]) {
+  rbind_car[,i] <- as.numeric(rbind_car[,i])
+  rbind_car[,i][is.na(rbind_car[,i])] <- 0
+}
+
+rbind_car <- rbind_car[,c(1,2,5)]
+ggplot(rbind_car,aes(x=年度,y=專業人員.薪資,color=行業別))+geom_line()+ theme(text=element_text(family="PingFang TC Light", size=6))
+
+
+
 
 
