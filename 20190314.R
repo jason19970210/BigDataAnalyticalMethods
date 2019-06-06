@@ -585,6 +585,146 @@ rbind_car <- rbind_car[,c(1,2,5)]
 ggplot(rbind_car,aes(x=年度,y=專業人員.薪資,color=行業別))+geom_line()+ theme(text=element_text(family="PingFang TC Light", size=6))
 
 
+#=======
+#20190530
+
+
+#=======
+
+
+#20190606
+library(mlbench)
+data(BostonHousing)
+# 使用crim、tax、dis欄位預測medv(Median value of owner-occupied homes in $1000's)
+glm(medv ~ crim + tax + dis, data = BostonHousing) # 用後面一個個欄位去分析
+# Output
+#Coefficients:
+#  (Intercept)         crim          tax          dis  
+#31.86107     -0.18855     -0.02047     -0.07644  
+
+# -0.1885 非相關性、相關係數
+# crim 每增加一單位 房價則降低 0.18855
+
+#Degrees of Freedom: 505 Total (i.e. Null);  502 Residual
+#Null Deviance:	    42720 
+#Residual Deviance: 32470 	AIC: 3552
+
+glm(medv ~ crim + tax + dis + rm + age + chas, data = BostonHousing)
+#Call:  glm(formula = medv ~ crim + tax + dis + rm + age + chas, data = BostonHousing)
+
+#Coefficients:
+#  (Intercept)         crim          tax          dis           rm          age        chas1  
+#-11.43069     -0.13322     -0.01110     -0.88335      7.58809     -0.08215      3.97782  
+
+#Degrees of Freedom: 505 Total (i.e. Null);  499 Residual
+#Null Deviance:     42720 
+#Residual Deviance: 16650  AIC: 3220
+
+# AIC 值越小越好
+
+
+
+
+
+
+BostonHousing$Test<-F #新增一個參數紀錄分組
+#隨機取1/3當Test set
+BostonHousing[sample(1:nrow(BostonHousing),
+               nrow(BostonHousing)/3),]$Test<-T
+# Training set : Test set球員數
+c(sum(BostonHousing$Test==F),sum(BostonHousing$Test==T))
+
+
+fit<-glm(medv ~ . , data = BostonHousing[BostonHousing$Test==F,])
+# medv ~ .
+# the `.` means all columns
+summary(fit)$coefficients
+
+
+library(MASS)
+##根據AIC，做逐步選擇, 預設倒退學習 direction = "backward"
+##trace=FALSE: 不要顯示步驟
+fit_backward<-
+  stepAIC(fit,
+          direction = "backward",
+          trace=FALSE)
+summary(fit_backward)$coefficients
+
+
+#library(MASS)
+fit_Both<-
+  stepAIC(fit,
+          direction = "both",
+          trace=FALSE)
+summary(fit_Both)$coefficients
+
+library(caret)
+train_index <- createDataPartition(y = BostonHousing$medv , times = 1, p = 0.75)
+train_final_model <- glm(medv ~ . , BostonHousing[train_index$Resample1,], family="gaussian")
+# already is a model
+
+# option 2
+#train_index <- createDataPartition(y = BostonHousing$medv , times = 1, p = 0.75 , list = T)
+#train_final_model <- glm(medv ~ . , BostonHousing[train_index,], family="gaussian")
+
+
+prediction <- predict(fit_Both, #Test==T, test data
+          newdata = BostonHousing[-train_index$Resample1,])
+cor(x=prediction,
+    y=BostonHousing[-train_index$Resample1,"medv"]) #相關係數
+
+df <- data.frame(predict=prediction,
+                 medv=BostonHousing[-train_index$Resample1,"medv"])
+# `-` means test-data
+
+
+ggplot(data = df, mapping = aes(x=prediction, y=medv)) + geom_point() + geom_smooth() + geom_segment(aes(x = 0, y = 0, xend = 50, yend = 50))
+
+
+
+library(rpart)
+library(rpart.plot)
+data(iris)
+iris.model<- rpart(Species ~ . , data=iris)
+prp(iris.model,         # 模型
+    faclen=0,           # 呈現的變數不要縮寫
+    fallen.leaves=TRUE, # 讓樹枝以垂直方式呈現
+    shadow.col="gray",  # 最下面的節點塗上陰影
+    # number of correct classifications / number of observations in that node
+    extra=2)
+
+
+library(mlbench)
+data(Sonar)
+
+Sonar$Test<-F #新增一個參數紀錄分組
+#隨機取1/3當Test set
+#Sonar[sample(1:nrow(Sonar),
+#                     nrow(Sonar)/3),]$Test<-T
+
+library(caret)
+train_index <- createDataPartition(Sonar$Class,1,(2/3), list=F)
+# Training set : Test set球員數
+#c(sum(Sonar$Test==F),sum(Sonar$Test==T))
+
+trainData <- Sonar[train_index,]
+testData <- Sonar[-train_index,]
+
+library(rpart)
+library(rpart.plot)
+dt <- rpart(Class ~ . , trainData)
+prp(dt, extra = 2)
+
+prediction <- predict(dt, testData, type = "class")
+predict(dt, testData)
+
+testData$predClass <- prediction
+sum(testData$Class==prediction)/nrow(testData)
+
+
+
+
+
 
 
 
