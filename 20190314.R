@@ -363,7 +363,7 @@ uniqlodf<-data.frame(product_name,product_price,product_url)
 nrow(uniqlodf)
 
 
-#from mac using `xml2` package instead of using `XML` package
+#for mac using `xml2` package instead of using `XML` package
 library(xml2)
 openDataUrl <- "http://gis.taiwan.net.tw/XMLReleaseALL_public/scenic_spot_C_f.xml"
 openDataUrlContent <- read_xml(openDataUrl)
