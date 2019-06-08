@@ -15,8 +15,8 @@ library(purrr)
 # Web Crawling (Typhoon) >> NOT WORKING
 
 # Data Import (Typhoon, Earthquake)
-typhoon_all <- read.csv("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/typhoon_web_table.csv",stringsAsFactors = F)
-xml_url_base <- paste("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/earthquake/CWB-EQ-Catalog-%d","xml",sep = ".")
+typhoon_all <- read.csv("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/typhoon/typhoon_web_table.csv",stringsAsFactors = F)
+xml_url_base <- paste("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/earthquake/CWB-EQ-Catalog-%d","xml",sep = ".")
 #eq1990 <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/earthquake/CWB-EQ-Catalog-1990.xml", Encoding = "utf-8")
 #a <- as.list(xml_text(xml_find_all(eq1990,".//phaseNumber")))
 #b <- as.list(xml_text(xml_find_all(eq1990,".//originTime")))
@@ -62,13 +62,14 @@ typhoon$Max_Wind_Speed_NT <- as.numeric(typhoon$Max_Wind_Speed_NT)
 typhoon$Level.7_Storm_Radius_NT <- as.numeric(typhoon$Level.7_Storm_Radius_NT)
 typhoon$Level.10_Storm_Radius_NT <- as.numeric(typhoon$Level.10_Storm_Radius_NT)
 typhoon$Alarm_Counts <- as.numeric(typhoon$Alarm_Counts)
+# Date format : https://www.stat.berkeley.edu/~s133/dates.html
 
 
 
 # replace `NA` to `0`
 # https://bbs.pinggu.org/thread-3589221-1-1.html
 #dat[is.na(dat)] <- 0
-typhoon[is.na(typhoon)] <- 0
+#typhoon[is.na(typhoon)] <- 0
 
 
 
