@@ -10,6 +10,7 @@ library(dplyr)
 library(ggplot2)
 library(tidyverse)
 library(purrr)
+library(plotly) #3d plot drawing
 
 
 # Web Crawling (Typhoon) >> NOT WORKING
@@ -33,15 +34,15 @@ map_df(1990:2018, function(i){
              epicenterLat = xml_text(xml_find_first(eqinfo, ".//epicenterLat")),
              depth = xml_text(xml_find_first(eqinfo, ".//depth")),
              magnitudeValue = xml_text(xml_find_first(eqinfo, ".//magnitudeValue")),
-             stationNumber = xml_text(xml_find_first(eqinfo, ".//stationNumber")),
-             phaseNumber = xml_text(xml_find_first(eqinfo, "./phaseNumber")),
-             minimumDistance = xml_text(xml_find_first(eqinfo, "./minimumDistance")),
+             #stationNumber = xml_text(xml_find_first(eqinfo, ".//stationNumber")),
+             #phaseNumber = xml_text(xml_find_first(eqinfo, "./phaseNumber")),
+             #minimumDistance = xml_text(xml_find_first(eqinfo, "./minimumDistance")),
              gap = xml_text(xml_find_first(eqinfo, "./gap")),
              rms = xml_text(xml_find_first(eqinfo, "./rms")),
              erh = xml_text(xml_find_first(eqinfo, "./erh")),
              erz = xml_text(xml_find_first(eqinfo, "./erz")),
              quality = xml_text(xml_find_first(eqinfo, "./quality")),
-             reviewStatus = xml_text(xml_find_first(eqinfo, "./reviewStatus")),
+             #reviewStatus = xml_text(xml_find_first(eqinfo, "./reviewStatus")),
             
              stringsAsFactors = FALSE   #doesnt have this parameter in tibble
   ) #end of data.frame
@@ -64,6 +65,18 @@ typhoon$Level.10_Storm_Radius_NT <- as.numeric(typhoon$Level.10_Storm_Radius_NT)
 typhoon$Alarm_Counts <- as.numeric(typhoon$Alarm_Counts)
 # Date format : https://www.stat.berkeley.edu/~s133/dates.html
 
+# Earthquake
+eq_df$originTime <- as.Date(eq_df$originTime)
+eq_df$epicenterLon <- as.numeric(eq_df$epicenterLon)
+eq_df$epicenterLat <- as.numeric(eq_df$epicenterLat)
+eq_df$depth <- as.numeric(eq_df$depth)
+eq_df$magnitudeValue <- as.numeric(eq_df$magnitudeValue)
+eq_df$gap <- as.numeric(eq_df$gap)
+eq_df$rms <- as.numeric(eq_df$rms)
+eq_df$erh <- as.numeric(eq_df$erh)
+eq_df$erz <- as.numeric(eq_df$erz)
+
+
 
 
 # replace `NA` to `0`
@@ -73,8 +86,17 @@ typhoon$Alarm_Counts <- as.numeric(typhoon$Alarm_Counts)
 
 
 
+# Data Filter
+eq_df_1990_05 <- eq_df %>% filter(between(originTime, as.Date("1990-05-01"),as.Date("1990-05-31")))
+eq_df_2018_07 <- eq_df %>% filter(between(originTime, as.Date("2018-07-01"),as.Date("2018-07-31")))
 
-# Join the tables
+# Plot Drawing
+#theme_set(theme_bw()) # Change the theme to my preference
+# Earthquake
+
+plot_ly(x = eq_df$magnitudeValue, type = 'histogram') # 芮氏規模統計
+plot_ly(x = eq_df$gap, type = 'histogram')
+ggplot(data = eq_df_2018_07, aes(x = originTime, y = magnitudeValue)) + geom_point()
 
 
 # Problems

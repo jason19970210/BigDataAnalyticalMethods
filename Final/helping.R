@@ -1,5 +1,6 @@
 library(xml2)
 library(dplyr)
+library(plotly)
 
 
 url <- "https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/earthquake/CWB-EQ-Catalog-1990.xml"
@@ -81,3 +82,31 @@ thetimes
 
 a <- 3+NA
 a
+
+
+# 3d plot drawing
+plot_ly (
+  type = 'scatter3d' , x = c( 9, 8, 5, 10 ) ,
+  y = c( 1, 2, 4, 8 ) ,
+  z = c( 11, 8, 15, 3 ) , mode = 'lines' )
+
+
+plot_ly (
+  #x=rchisq ( 100, 5, 0 ),
+  x = eq_df$magnitudeValue,
+  type = 'histogram' )
+
+
+axis_template <- list( showgrid = F , zeroline = F , nticks = 20 , showline = T ,title = 'AXIS' , mirror = 'all' )
+plot_ly (x = eq_df$magnitudeValue, type = 'histogram') %>% layout(xaxis = axis_template , yaxis = axis_template )
+
+
+plot_ly (
+  type = 'scattergeo' , lon = c( -73.5, 151.2 ) , lat = c( 45.5, -33.8 ) , marker = list (
+    color = c( 'red' , 'blue' ) , size = c( 30, 50 ) , mode = 'markers' ))
+
+plot_ly (
+  x = rnorm( 1000, sd = 10 ) , y = rnorm( 1000, sd = 5 ) , type = 'histogram2d' )
+
+plot_ly (
+  y = rnorm( 50 ) , type = 'box' ) 
