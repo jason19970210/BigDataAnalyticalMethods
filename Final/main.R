@@ -105,7 +105,7 @@ eq_df_2018_07 <- eq_df %>% filter(between(originTime, as.Date("2018-07-01"),as.D
 #theme_set(theme_bw()) # Change the theme to my preference
 # Earthquake
 
-plot_ly(x = eq_df$magnitudeValue, type = 'histogram') # 芮氏規模統計
+plot_ly(x = eq_df$magnitudeValue, type = 'histogram')# 芮氏規模統計
 plot_ly(x = eq_df$gap, type = 'histogram')
 ggplot(data = eq_df_2018_07, aes(x = originTime, y = magnitudeValue)) + geom_point()
 ggplot(data = typhoon, aes(x = Min_Pressure_NT, y = Max_Wind_Speed_NT)) + geom_point(shape=1) + geom_smooth(method=lm)
@@ -117,6 +117,7 @@ plot_ly (x = ~typhoon$Min_Pressure_NT,  y = ~typhoon$Max_Wind_Speed_NT,  type = 
 typhoon_all %>% filter(Min_Pressure_NT > 0) %>% plot_ly(x = ~.$Max_Wind_Speed_NT, y = ~.$Min_Pressure_NT, type = 'scatter', mode = 'markers', color = .$Level)
 typhoon %>% plot_ly (x = ~.$Level.10_Storm_Radius_NT, y = ~.$Level.7_Storm_Radius_NT ,z = ~.$Alarm_Counts,  type = 'scatter3d' , mode = 'markers', color = ~.$Level)
 ggplotly(ggplot(data = typhoon, aes(x = Min_Pressure_NT, y = Max_Wind_Speed_NT)) + geom_point(shape=1) + geom_smooth(method=lm))
+
 
 
 

@@ -115,3 +115,13 @@ plot_ly (
   x = c( 1, 2, 3 ),
   y = c( 5, 6, 7 ),
   type = 'scatter' , mode = 'markers' )
+
+plot_ly(typhoon, x = ~Min_Pressure_NT, color = I("black")) %>%
+  add_markers(y = ~Max_Wind_Speed_NT, showlegend = FALSE) %>%
+  add_lines(y = ~fitted(loess(Max_Wind_Speed_NT ~ Min_Pressure_NT)),
+            line = list(color = 'rgba(7, 164, 181, 1)'),
+            name = "Loess Smoother")
+
+
+typhoon %>% plotly(x = ~.$Min_Pressure_NT, y = ~.$Max_Wind_Speed_NT, mode = 'markers', color = ~.$Level) %>%
+  add_markers(y = ~.$Max_Wind_Speed_NT) %>% add_trace(x = ~.$Min_Pressure_NT, y = lm(.$Max_Wind_Speed_NT ~ .$Min_Pressure_NT,.), mode = 'lines') %>% layout(showlegend = F)
