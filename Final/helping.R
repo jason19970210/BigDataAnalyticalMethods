@@ -109,4 +109,9 @@ plot_ly (
   x = rnorm( 1000, sd = 10 ) , y = rnorm( 1000, sd = 5 ) , type = 'histogram2d' )
 
 plot_ly (
-  y = rnorm( 50 ) , type = 'box' ) 
+  y = rnorm( 50 ) , type = 'box' )
+
+plot_ly (
+  x = c( 1, 2, 3 ),
+  y = c( 5, 6, 7 ),
+  type = 'scatter' , mode = 'markers' )
