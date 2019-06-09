@@ -1,0 +1,45 @@
+---
+title: "Final"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+
+```{r, message= F, warning=F}
+library(plotly)
+typhoon_all <- read.csv("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/typhoon/typhoon_web_table.csv",stringsAsFactors = F)
+typhoon <- filter(typhoon_all, Year >= 1990)
+
+typhoon$Year <- as.character(typhoon$Year)
+typhoon$Alarm_Start <- as.Date(typhoon$Alarm_Start)
+typhoon$Alarm_End <- as.Date(typhoon$Alarm_End)
+typhoon$Min_Pressure_NT <- as.numeric(typhoon$Min_Pressure_NT)
+typhoon$Max_Wind_Speed_NT <- as.numeric(typhoon$Max_Wind_Speed_NT)
+typhoon$Level.7_Storm_Radius_NT <- as.numeric(typhoon$Level.7_Storm_Radius_NT)
+typhoon$Level.10_Storm_Radius_NT <- as.numeric(typhoon$Level.10_Storm_Radius_NT)
+typhoon$Alarm_Counts <- as.numeric(typhoon$Alarm_Counts)
+
+plot_ly (x = ~typhoon$Level.10_Storm_Radius_NT, y = ~typhoon$Level.7_Storm_Radius_NT ,z = ~typhoon$Alarm_Counts,  type = 'scatter3d' , mode = 'markers', color = ~typhoon$Level)
+```
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
