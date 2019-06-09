@@ -45,7 +45,7 @@ map_df(1990:2018, function(i){
              erz = xml_text(xml_find_first(eqinfo, "./erz")),
              quality = xml_text(xml_find_first(eqinfo, "./quality")),
              #reviewStatus = xml_text(xml_find_first(eqinfo, "./reviewStatus")),
-            
+             
              stringsAsFactors = FALSE   #doesnt have this parameter in tibble
   ) #end of data.frame
 }) -> eq_df
@@ -108,6 +108,16 @@ eq_df_2018_07 <- eq_df %>% filter(between(originTime, as.Date("2018-07-01"),as.D
 plot_ly(x = eq_df$magnitudeValue, type = 'histogram') # 芮氏規模統計
 plot_ly(x = eq_df$gap, type = 'histogram')
 ggplot(data = eq_df_2018_07, aes(x = originTime, y = magnitudeValue)) + geom_point()
+ggplot(data = typhoon, aes(x = Min_Pressure_NT, y = Max_Wind_Speed_NT)) + geom_point(shape=1) + geom_smooth(method=lm)
+ggplot(data = typhoon, aes(x = Level.7_Storm_Radius_NT, y = Level.10_Storm_Radius_NT)) + geom_point()
+ggplot(data = typhoon_all, aes(x = Level.10_Storm_Radius_NT, y = Alarm_Counts)) + geom_point()
+plot_ly (x = ~typhoon$Level.7_Storm_Radius_NT,  y = ~typhoon$Level.10_Storm_Radius_NT,  type = 'scatter' , mode = 'markers', color = ~typhoon$Level)
+plot_ly (x = ~typhoon$Level.10_Storm_Radius_NT,  y = ~typhoon$Alarm_Counts,  type = 'scatter' , mode = 'markers', color = ~typhoon$Level)
+plot_ly (x = ~typhoon$Min_Pressure_NT,  y = ~typhoon$Max_Wind_Speed_NT,  type = 'scatter' , mode = 'markers', color = ~typhoon$Level)
+typhoon_all %>% filter(Min_Pressure_NT > 0) %>% plot_ly(x = ~.$Max_Wind_Speed_NT, y = ~.$Min_Pressure_NT, type = 'scatter', mode = 'markers', color = .$Level)
+typhoon %>% plot_ly (x = ~.$Level.10_Storm_Radius_NT, y = ~.$Level.7_Storm_Radius_NT ,z = ~.$Alarm_Counts,  type = 'scatter3d' , mode = 'markers', color = ~.$Level)
+ggplotly(ggplot(data = typhoon, aes(x = Min_Pressure_NT, y = Max_Wind_Speed_NT)) + geom_point(shape=1) + geom_smooth(method=lm))
+
 
 ggplot(data = typhoon, aes(x = Min_Pressure_NT, y = Max_Wind_Speed_NT)) + geom_point(shape=1) + geom_smooth(method=lm)
 ggplot(data = typhoon, aes(x = Level.7_Storm_Radius_NT, y = Level.10_Storm_Radius_NT)) + geom_point()
@@ -126,5 +136,8 @@ ggplotly(ggplot(data = typhoon, aes(x = Min_Pressure_NT, y = Max_Wind_Speed_NT))
 # 2. reading the nodes in `xml`
 # Solution : Read the root node of each record first, then use `xml_find_first` & `xml_find_all`
 # If take `xml_find_all` without reading the root node of each record, will get wrong value
-# 3. 
+
+# 3. rstudio console is displayed with the system default language
+# Solution : 
 # https://stackoverflow.com/questions/56503222/how-to-data-frame-with-different-number-of-rows-but-related-not-by/56511335#56511335
+
