@@ -160,8 +160,10 @@ plot_ly(x = ~eq_df_2018_07$epicenterLon, y = ~eq_df_2018_07$epicenterLat, z = ~e
 
 plot_ly(x = ~eq_df_2018_07$erh, y = ~eq_df_2018_07$erz, z = ~eq_df_2018_07$rms,  type = 'scatter3d' , mode = 'markers')
 plot_ly(x = ~eq_df_2018$erh,  y = ~eq_df_2018$originTime,  type = 'scatter' , mode = 'markers')
+plot_ly(x = ~eq_df_2017$erh,  y = ~eq_df_2017$originTime,  type = 'scatter' , mode = 'markers')
+plot_ly(x = ~eq_df_2017$rms,  y = ~eq_df_2017$originTime,  type = 'scatter' , mode = 'markers')
 plot_ly(x = ~eq_df_2017$erh,  y = ~eq_df_2017$erz,  type = 'scatter' , mode = 'markers')
-plot_ly(x = ~eq_df_2018$erh,  y = ~eq_df_2018$erz,  type = 'scatter' , mode = 'markers')
+
 
 
 
