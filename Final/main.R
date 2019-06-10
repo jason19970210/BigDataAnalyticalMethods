@@ -19,7 +19,7 @@ library(plotly) #3d plot drawing
 #https://rdc28.cwb.gov.tw/TDB/public/warning_typhoon_list/
 typhoon_all <- read.csv("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/typhoon/typhoon_web_table.csv",stringsAsFactors = F)
 xml_url_base <- paste("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/earthquake/CWB-EQ-Catalog-%d","xml",sep = ".")
-sea_level <- read_csv("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/sea/sea_level.csv")
+sea_level <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/sea/sea_level.xml")
 sea_temp <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/sea/sea_temp.xml")
 #eq1990 <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/earthquake/CWB-EQ-Catalog-1990.xml", Encoding = "utf-8")
 #a <- as.list(xml_text(xml_find_all(eq1990,".//phaseNumber")))
