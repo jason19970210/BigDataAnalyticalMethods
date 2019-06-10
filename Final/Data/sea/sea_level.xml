@@ -11,19 +11,19 @@
 <note>海平面資料(年)</note>
 <dataset>
 <location>
-  <SiteName>新北市 淡海</SiteName>
-  <SiteId>11006</SiteId>
-  <ItemName>西元年月</ItemName>
-  <ItemValue>201700</ItemValue>
-  <ItemName>平均潮位</ItemName>
-  <ItemValue>41.4</ItemValue>
-  <ItemUnit>cm</ItemUnit>
-  <ItemName>最高高潮位</ItemName>
-  <ItemValue>333.2</ItemValue>
-  <ItemUnit>cm</ItemUnit>
-  <ItemName>最低低潮位</ItemName>
-  <ItemValue>-230.9</ItemValue>
-  <ItemUnit>cm</ItemUnit>
+<SiteName>新北市 淡海</SiteName>
+<SiteId>11006</SiteId>
+<ItemName>西元年月</ItemName>
+<ItemValue>201700</ItemValue>
+<ItemName>平均潮位</ItemName>
+<ItemValue>41.4</ItemValue>
+<ItemUnit>cm</ItemUnit>
+<ItemName>最高高潮位</ItemName>
+<ItemValue>333.2</ItemValue>
+<ItemUnit>cm</ItemUnit>
+<ItemName>最低低潮位</ItemName>
+<ItemValue>-230.9</ItemValue>
+<ItemUnit>cm</ItemUnit>
 </location>
 <location>
 <SiteName>新北市 淡海</SiteName>
