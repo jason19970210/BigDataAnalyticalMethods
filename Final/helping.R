@@ -3,6 +3,23 @@ library(dplyr)
 library(plotly)
 
 
+
+sea_level <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/sea/sea_level.xml")
+sea_temp <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/sea/sea_temp.xml")
+
+
+# has data
+a <- xml_children(xml_children(sea_level))
+a1 <- xml_children(xml_children(xml_children(sea_level)))
+
+
+# no data
+location <- xml_find_all(sea_temp, './/LocationName')
+
+
+
+
+# ================================
 url <- "https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/earthquake/CWB-EQ-Catalog-1990.xml"
 
 earthq_xml <- read_xml(url)

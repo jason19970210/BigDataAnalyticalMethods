@@ -21,10 +21,37 @@ typhoon_all <- read.csv("https://raw.githubusercontent.com/jason19970210/BigData
 xml_url_base <- paste("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/earthquake/CWB-EQ-Catalog-%d","xml",sep = ".")
 sea_level <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/sea/sea_level.xml")
 sea_temp <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/sea/sea_temp.xml")
-#eq1990 <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/earthquake/CWB-EQ-Catalog-1990.xml", Encoding = "utf-8")
+eq1990 <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/earthquake/CWB-EQ-Catalog-1990.xml", Encoding = "utf-8")
 #a <- as.list(xml_text(xml_find_all(eq1990,".//phaseNumber")))
 #b <- as.list(xml_text(xml_find_all(eq1990,".//originTime")))
 #eq1990 %>% xml_child() %>% map(xml_find_all, ".//phaseNumber") %>% map_if(is_empty, ~{.eq1990 <- NA})
+
+
+
+a <- xml_children(xml_children(sea_level))
+a1 <- xml_children(xml_children(xml_children(sea_level)))
+a1
+
+
+
+location <- xml_find_all(sea_temp, './/LocationName')
+
+
+eqinfo <- xml_find_all(eq1990, ".//earthquakeinfo")
+
+
+if (1 < 0){
+  SiteId = xml_text(xml_find_all(sea_level_info, ".//SiteId")),
+  ItemNameA = xml_text(xml_find_all(sea_level_info, ".//ItemName")),
+  ItemValueA = xml_text(xml_find_all(sea_level_info, ".//ItemValue")),
+  ItemUnitA = xml_text(xml_find_all(sea_level_info, ".//ItemUnit")),
+  ItemNameB = xml_text(xml_find_all(sea_level_info, "./ItemName")),
+  ItemValueB = xml_text(xml_find_all(sea_level_info, "./ItemValue")),
+  ItemUnitB = xml_text(xml_find_all(sea_level_info, "./ItemUnit")),
+  ItemNameC = xml_text(xml_find_all(sea_level_info, "./ItemName")),
+  ItemValueC = xml_text(xml_find_all(sea_level_info, "./ItemValue")),
+  ItemUnitC = xml_text(xml_find_all(sea_level_info, ".//ItemUnit")),
+}
 
 #https://www.youtube.com/watch?v=82s8KdZt5v8
 # Transfer many xml files to data frame
@@ -51,6 +78,8 @@ map_df(1990:2018, function(i){
              stringsAsFactors = FALSE   #doesnt have this parameter in tibble
   ) #end of data.frame
 }) -> eq_df
+
+
 
 
 # Data pre-Filter
@@ -102,6 +131,10 @@ typhoon_all[is.na(typhoon_all)] <- 0
 # Data Filter
 eq_df_1990_05 <- eq_df %>% filter(between(originTime, as.Date("1990-05-01"),as.Date("1990-05-31")))
 eq_df_2018_07 <- eq_df %>% filter(between(originTime, as.Date("2018-07-01"),as.Date("2018-07-31")))
+eq_df_2018 <- eq_df %>% filter(between(originTime, as.Date("2018-01-01"),as.Date("2018-12-31")))
+eq_df_2017 <- eq_df %>% filter(between(originTime, as.Date("2017-01-01"),as.Date("2017-12-31")))
+
+
 
 # Plot Drawing
 #theme_set(theme_bw()) # Change the theme to my preference
@@ -120,6 +153,15 @@ plot_ly (x = ~typhoon$Min_Pressure_NT,  y = ~typhoon$Max_Wind_Speed_NT,  type = 
 typhoon_all %>% filter(Min_Pressure_NT > 0) %>% plot_ly(x = ~.$Max_Wind_Speed_NT, y = ~.$Min_Pressure_NT, type = 'scatter', mode = 'markers', color = .$Level)
 typhoon %>% plot_ly (x = ~.$Level.10_Storm_Radius_NT, y = ~.$Level.7_Storm_Radius_NT ,z = ~.$Alarm_Counts,  type = 'scatter3d' , mode = 'markers', color = ~.$Level)
 ggplotly(ggplot(data = typhoon, aes(x = Min_Pressure_NT, y = Max_Wind_Speed_NT)) + geom_point(shape=1) + geom_smooth(method=lm))
+
+
+plot_ly(x = ~eq_df_2018_07$depth,  y = ~eq_df_2018_07$magnitudeValue,  type = 'scatter' , mode = 'markers')
+plot_ly(x = ~eq_df_2018_07$epicenterLon, y = ~eq_df_2018_07$epicenterLat, z = ~eq_df_2018_07$depth,  type = 'scatter3d' , mode = 'markers' )
+
+plot_ly(x = ~eq_df_2018_07$erh, y = ~eq_df_2018_07$erz, z = ~eq_df_2018_07$rms,  type = 'scatter3d' , mode = 'markers')
+plot_ly(x = ~eq_df_2018$erh,  y = ~eq_df_2018$originTime,  type = 'scatter' , mode = 'markers')
+plot_ly(x = ~eq_df_2017$erh,  y = ~eq_df_2017$erz,  type = 'scatter' , mode = 'markers')
+plot_ly(x = ~eq_df_2018$erh,  y = ~eq_df_2018$erz,  type = 'scatter' , mode = 'markers')
 
 
 
