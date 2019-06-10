@@ -19,13 +19,15 @@ library(plotly) #3d plot drawing
 #https://rdc28.cwb.gov.tw/TDB/public/warning_typhoon_list/
 typhoon_all <- read.csv("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/typhoon/typhoon_web_table.csv",stringsAsFactors = F)
 xml_url_base <- paste("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/earthquake/CWB-EQ-Catalog-%d","xml",sep = ".")
+sea_level <- read_csv("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/sea/sea_level.csv")
+sea_temp <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/sea/sea_temp.xml")
 #eq1990 <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/earthquake/CWB-EQ-Catalog-1990.xml", Encoding = "utf-8")
 #a <- as.list(xml_text(xml_find_all(eq1990,".//phaseNumber")))
 #b <- as.list(xml_text(xml_find_all(eq1990,".//originTime")))
 #eq1990 %>% xml_child() %>% map(xml_find_all, ".//phaseNumber") %>% map_if(is_empty, ~{.eq1990 <- NA})
 
 #https://www.youtube.com/watch?v=82s8KdZt5v8
-# Transfer to data frame
+# Transfer many xml files to data frame
 map_df(1990:2018, function(i){
   xml_url <- read_xml(sprintf(xml_url_base,i))
   eqinfo <- xml_find_all(xml_url, ".//earthquakeinfo")
@@ -51,7 +53,7 @@ map_df(1990:2018, function(i){
 }) -> eq_df
 
 
-# Data Filter
+# Data pre-Filter
 typhoon <- filter(typhoon_all, Year >= 1990)
 
 
@@ -111,6 +113,7 @@ ggplot(data = eq_df_2018_07, aes(x = originTime, y = magnitudeValue)) + geom_poi
 ggplot(data = typhoon, aes(x = Min_Pressure_NT, y = Max_Wind_Speed_NT)) + geom_point(shape=1) + geom_smooth(method=lm)
 ggplot(data = typhoon, aes(x = Level.7_Storm_Radius_NT, y = Level.10_Storm_Radius_NT)) + geom_point()
 ggplot(data = typhoon_all, aes(x = Level.10_Storm_Radius_NT, y = Alarm_Counts)) + geom_point()
+
 plot_ly (x = ~typhoon$Level.7_Storm_Radius_NT,  y = ~typhoon$Level.10_Storm_Radius_NT,  type = 'scatter' , mode = 'markers', color = ~typhoon$Level)
 plot_ly (x = ~typhoon$Level.10_Storm_Radius_NT,  y = ~typhoon$Alarm_Counts,  type = 'scatter' , mode = 'markers', color = ~typhoon$Level)
 plot_ly (x = ~typhoon$Min_Pressure_NT,  y = ~typhoon$Max_Wind_Speed_NT,  type = 'scatter' , mode = 'markers', color = ~typhoon$Level)
