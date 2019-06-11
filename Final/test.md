@@ -14,8 +14,9 @@
 
 ### FAQ
 
+<center>
 ![Sli.do\_room](https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png)
-
+</center>
 ### Library Import
 
 ``` r
