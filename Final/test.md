@@ -15,7 +15,7 @@
 ### FAQ
 
 <div align = center>
-&lt;src =
+&lt; img src =
 “<a href="https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png" class="uri">https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png</a>”&gt;
 
 ``` r
