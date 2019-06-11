@@ -1,39 +1,26 @@
-Library Import
---------------
+ABC
+---
+
+### Library Import
 
 ``` r
 library(xml2)
+library(jsonlite)
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
 library(purrr)
+library(data.table)
 library(plotly) #3d plot drawing
 ```
 
-Data Import
------------
+### Data Import
 
 ``` r
 typhoon_all <- read.csv("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/typhoon/typhoon_web_table.csv",stringsAsFactors = F)
 xml_url_base <- paste("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/earthquake/CWB-EQ-Catalog-%d","xml",sep = ".")
-sea_level <- read_csv("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/sea/sea_level.csv")
-```
-
-    ## Warning: Duplicated column names deduplicated: '海平面資料' => '海平面資料
-    ## _1' [5], '海平面資料' => '海平面資料_2' [6]
-
-    ## Parsed with column specification:
-    ## cols(
-    ##   序號 = col_double(),
-    ##   測站名稱 = col_character(),
-    ##   日期 = col_character(),
-    ##   海平面資料 = col_character(),
-    ##   海平面資料_1 = col_character(),
-    ##   海平面資料_2 = col_character()
-    ## )
-
-``` r
-sea_temp <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/sea/sea_temp.xml")
+sea_level <- fromJSON("https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/C-B0048-001?Authorization=CWB-64CBB768-EE64-4FD2-AED5-0A68D1A48B79&downloadType=WEB&format=JSON")
+sea_level <- sea_level$Cwbopendata$dataset$location
 ```
 
 #### Transfer many xml files to data frame
