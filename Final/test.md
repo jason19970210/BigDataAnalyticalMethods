@@ -1,5 +1,9 @@
-ABC
----
+### Dev. Environment & Software
+
+-   MacOS 10.13.6 High Sierra
+    -   RStudio v1.1.463
+-   MacOS 10.14.5 Mojave
+    -   RStudio v1.2.1335
 
 ### Library Import
 
@@ -36,20 +40,18 @@ map_df(1990:2018, function(i){
              epicenterLat = xml_text(xml_find_first(eqinfo, ".//epicenterLat")),
              depth = xml_text(xml_find_first(eqinfo, ".//depth")),
              magnitudeValue = xml_text(xml_find_first(eqinfo, ".//magnitudeValue")),
-             #stationNumber = xml_text(xml_find_first(eqinfo, ".//stationNumber")),
-             #phaseNumber = xml_text(xml_find_first(eqinfo, "./phaseNumber")),
-             #minimumDistance = xml_text(xml_find_first(eqinfo, "./minimumDistance")),
              gap = xml_text(xml_find_first(eqinfo, "./gap")),
              rms = xml_text(xml_find_first(eqinfo, "./rms")),
              erh = xml_text(xml_find_first(eqinfo, "./erh")),
              erz = xml_text(xml_find_first(eqinfo, "./erz")),
              quality = xml_text(xml_find_first(eqinfo, "./quality")),
-             #reviewStatus = xml_text(xml_find_first(eqinfo, "./reviewStatus")),
              
              stringsAsFactors = FALSE   #doesnt have this parameter in tibble
   ) #end of data.frame
 }) -> eq_df
 ```
+
+`map_df()`
 
 Data Processing
 ---------------
