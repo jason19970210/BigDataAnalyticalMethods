@@ -14,9 +14,14 @@
 
 ### FAQ
 
-<center>
-![Sli.do\_room](https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png)
-</center>
+<div align = center>
+&lt;src =
+“<a href="https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png" class="uri">https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png</a>”&gt;
+
+``` r
+#![Sli.do_room](https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png)
+```
+
 ### Library Import
 
 ``` r

@@ -20,9 +20,10 @@ knitr::opts_chunk$set(echo = TRUE)
   - RStudio v1.2.1335
 
 ### FAQ
-<center>
-![Sli.do_room](https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png)
-</center>
+<div align = center><src = "https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png">
+```{r}
+#![Sli.do_room](https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png)
+```
 
 ### Library Import
 
