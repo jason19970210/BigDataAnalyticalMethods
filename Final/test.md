@@ -3,12 +3,18 @@
 
 ### Big Data Analytical Method Final Project
 
+-   B0544255 許懿傑
+
 ### Dev. Environment & Software
 
 -   MacOS 10.13.6 High Sierra
     -   RStudio v1.1.463
 -   MacOS 10.14.5 Mojave
     -   RStudio v1.2.1335
+
+### FAQ
+
+![Sli.do\_room](https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png)
 
 ### Library Import
 
@@ -20,7 +26,7 @@ library(ggplot2)
 library(tidyverse)
 library(purrr)
 library(data.table)
-library(plotly) #3d plot drawing
+library(plotly)
 ```
 
 ### Data Import

@@ -5,11 +5,11 @@ seatemp <- fromJSON("https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/C-B0050-
 seatemp <- seatemp$Cwbopendata$dataset$location
 
 sea_test2 <- data.frame(obsrtime = NA,
-                       月平均 = NA,
-                       月最高溫 = NA,
-                       月最高溫發生時間 = NA,
-                       月最低溫 = NA,
-                       月最低溫發生時間 = NA,
+                        MonthAvg = NA,
+                        MonthHigh = NA,
+                        MonthHighTime = NA,
+                       MonthLow = NA,
+                       MonthLowTime = NA,
                        LocationName = NA,
                        StationID = NA,
                        lon = NA,
@@ -19,11 +19,11 @@ sea_test2 <- data.frame(obsrtime = NA,
 for (j in 1:nrow(seatemp)){
   
   sea_test <- data.frame(obsrtime = NA,
-                         月平均 = NA,
-                         月最高溫 = NA,
-                         月最高溫發生時間 = NA,
-                         月最低溫 = NA,
-                         月最低溫發生時間 = NA)
+                         MonthAvg = NA,
+                         MonthHigh = NA,
+                         MonthHighTime = NA,
+                         MonthLow = NA,
+                         MonthLowTime = NA)
   
   for (i in 1:length(seatemp$time[[j]]$obsrtime)) {
     sea_temp  <- c(seatemp$time[[j]]$obsrtime[i], seatemp$time[[j]]$weatherElement$elementValue[[i]]$vlaue)
@@ -45,8 +45,8 @@ seatemp <- select(sea_test2,
                     lon,
                     lat, 
                     obsrtime, 
-                    月平均, 
-                    月最高溫, 
-                    月最高溫發生時間, 
-                    月最低溫, 
-                    月最低溫發生時間)
+                    MonthAvg, 
+                    MonthHigh, 
+                    MonthHighTime, 
+                    MonthLow, 
+                    MonthLowTime)
