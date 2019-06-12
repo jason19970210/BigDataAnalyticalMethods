@@ -125,6 +125,7 @@ eq_df$erz <- as.numeric(eq_df$erz)
 # https://bbs.pinggu.org/thread-3589221-1-1.html
 #dat[is.na(dat)] <- 0
 typhoon_all[is.na(typhoon_all)] <- 0
+typhoon[is.na(typhoon)] <- 0
 
 
 
@@ -163,6 +164,21 @@ plot_ly(x = ~eq_df_2018$erh,  y = ~eq_df_2018$originTime,  type = 'scatter' , mo
 plot_ly(x = ~eq_df_2017$erh,  y = ~eq_df_2017$originTime,  type = 'scatter' , mode = 'markers')
 plot_ly(x = ~eq_df_2017$rms,  y = ~eq_df_2017$originTime,  type = 'scatter' , mode = 'markers')
 plot_ly(x = ~eq_df_2017$erh,  y = ~eq_df_2017$erz,  type = 'scatter' , mode = 'markers')
+
+
+
+
+
+
+
+### 假設問題
+typhoon %>% filter()
+plot_ly(x = ~typhoon$Level.7_Storm_Radius_NT, y = ~typhoon$Level.10_Storm_Radius_NT, type = 'scatter', mode = 'markers')
+
+
+
+
+
 
 
 

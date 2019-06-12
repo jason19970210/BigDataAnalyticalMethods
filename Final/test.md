@@ -14,12 +14,9 @@
 
 ### FAQ
 
-&lt; img src =
-“<a href="https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png" class="uri">https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png</a>”&gt;
+![Sli.do\_room](https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png)
 
-``` r
-#![Sli.do_room](https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png)
-```
+------------------------------------------------------------------------
 
 ### Library Import
 
@@ -38,16 +35,16 @@ library(plotly)
 
 ``` r
 typhoon_all <- read.csv("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/typhoon/typhoon_web_table.csv",stringsAsFactors = F)
-xml_url_base <- paste("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/earthquake/CWB-EQ-Catalog-%d","xml",sep = ".")
+eq_xml_url_base <- paste("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/earthquake/CWB-EQ-Catalog-%d","xml",sep = ".")
 sea_level <- fromJSON("https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/C-B0048-001?Authorization=CWB-64CBB768-EE64-4FD2-AED5-0A68D1A48B79&downloadType=WEB&format=JSON")
-sea_level <- sea_level$Cwbopendata$dataset$location
+seatemp <- fromJSON("https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/C-B0050-001?Authorization=CWB-64CBB768-EE64-4FD2-AED5-0A68D1A48B79&downloadType=WEB&format=JSON")
 ```
 
-#### Transfer many xml files to data frame
+#### Data 1st Processing
 
 ``` r
 map_df(1990:2018, function(i){
-  xml_url <- read_xml(sprintf(xml_url_base,i))
+  xml_url <- read_xml(sprintf(eq_xml_url_base,i))
   eqinfo <- xml_find_all(xml_url, ".//earthquakeinfo")
   
   #tibble::tibble
@@ -69,10 +66,74 @@ map_df(1990:2018, function(i){
 
 `map_df()`
 
-Data Processing
----------------
+``` r
+sea_level <- sea_level$Cwbopendata$dataset$location
 
-### pre-filter
+sea_level <- data.table(sea_level)
+sea_level[, number := 1:nrow(sea_level)]
+sea_level[, yyyymm := ItemValue[[.N]][[1]], by = number]
+sea_level[, MeanSeaLevel := ItemValue[[.N]][2], by = number]
+sea_level[, MeanSeaLevel_unit := ItemUnit[[.N]][1], by = number]
+sea_level[, HHWL := ItemValue[[.N]][3], by = number]
+sea_level[, HHWL_unit := ItemUnit[[.N]][2], by = number]
+sea_level[, LLWL := ItemValue[[.N]][4], by = number]
+sea_level[, LLWL_unit := ItemUnit[[.N]][3], by = number]
+
+sea_level <- select(sea_level, SiteName, SiteId, yyyymm, MeanSeaLevel, MeanSeaLevel_unit, HHWL, HHWL_unit, LLWL, LLWL_unit)
+```
+
+``` r
+seatemp <- seatemp$Cwbopendata$dataset$location
+
+sea_test2 <- data.frame(obsrtime = NA,
+                        MonthAvg = NA,
+                        MonthHigh = NA,
+                        MonthHighTime = NA,
+                       MonthLow = NA,
+                       MonthLowTime = NA,
+                       LocationName = NA,
+                       StationID = NA,
+                       lon = NA,
+                       lat = NA)
+
+
+for (j in 1:nrow(seatemp)){
+  
+  sea_test <- data.frame(obsrtime = NA,
+                         MonthAvg = NA,
+                         MonthHigh = NA,
+                         MonthHighTime = NA,
+                         MonthLow = NA,
+                         MonthLowTime = NA)
+  
+  for (i in 1:length(seatemp$time[[j]]$obsrtime)) {
+    sea_temp  <- c(seatemp$time[[j]]$obsrtime[i], seatemp$time[[j]]$weatherElement$elementValue[[i]]$vlaue)
+    sea_test <- rbind(sea_test, sea_temp)
+  }
+  sea_test <- sea_test[-1,]
+  sea_test$LocationName <- seatemp$LocationName[j]
+  sea_test$StationID <- seatemp$StationID[j]
+  sea_test$lon <- seatemp$lon[j]
+  sea_test$lat <- seatemp$lat[j]
+  
+  sea_test2 <- rbind(sea_test2, sea_test)
+}
+
+sea_test2 <- sea_test2[-1,]
+seatemp <- select(sea_test2, 
+                    LocationName, 
+                    StationID, 
+                    lon,
+                    lat, 
+                    obsrtime, 
+                    MonthAvg, 
+                    MonthHigh, 
+                    MonthHighTime, 
+                    MonthLow, 
+                    MonthLowTime)
+```
+
+### Data Filter
 
 ``` r
 typhoon <- filter(typhoon_all, Year >= 1990)
