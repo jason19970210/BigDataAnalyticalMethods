@@ -28,11 +28,6 @@ eq1990 <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnaly
 
 
 
-a <- xml_children(xml_children(sea_level))
-a1 <- xml_children(xml_children(xml_children(sea_level)))
-a1
-
-
 
 location <- xml_find_all(sea_temp, './/LocationName')
 
@@ -78,38 +73,6 @@ map_df(1990:2018, function(i){
              stringsAsFactors = FALSE   #doesnt have this parameter in tibble
   ) #end of data.frame
 }) -> eq_df
-
-
-
-
-# Transfer many xml files to data frame
-map_df(1990:2018, function(i){
-  xml_url <- read_xml(sprintf(xml_url_base,i))
-  eqinfo <- xml_find_all(xml_url, ".//earthquakeinfo")
-  
-  #tibble::tibble
-  data.frame(originTime = xml_text(xml_find_first(eqinfo, ".//originTime")),
-             epicenterLon = xml_text(xml_find_first(eqinfo, ".//epicenterLon")),
-             epicenterLat = xml_text(xml_find_first(eqinfo, ".//epicenterLat")),
-             depth = xml_text(xml_find_first(eqinfo, ".//depth")),
-             magnitudeValue = xml_text(xml_find_first(eqinfo, ".//magnitudeValue")),
-             #stationNumber = xml_text(xml_find_first(eqinfo, ".//stationNumber")),
-             #phaseNumber = xml_text(xml_find_first(eqinfo, "./phaseNumber")),
-             #minimumDistance = xml_text(xml_find_first(eqinfo, "./minimumDistance")),
-             gap = xml_text(xml_find_first(eqinfo, "./gap")),
-             rms = xml_text(xml_find_first(eqinfo, "./rms")),
-             erh = xml_text(xml_find_first(eqinfo, "./erh")),
-             erz = xml_text(xml_find_first(eqinfo, "./erz")),
-             quality = xml_text(xml_find_first(eqinfo, "./quality")),
-             #reviewStatus = xml_text(xml_find_first(eqinfo, "./reviewStatus")),
-             
-             stringsAsFactors = FALSE   #doesnt have this parameter in tibble
-  ) #end of data.frame
-}) -> eq_df
-
-
-
-
 
 
 
@@ -200,17 +163,20 @@ plot_ly(x = ~eq_df_2017$erh,  y = ~eq_df_2017$erz,  type = 'scatter' , mode = 'm
 
 
 
+#plot_ly(x = ~sub_level_temp$lat, y = ~sub_level_temp$lon, z = ~sub_level_temp$MeanSeaLevel, type = 'scatter3d', mode = 'markers', marker=list(
+#  size=seq(0, 39), color=seq(-120, 50), colorbar=list( title='Colorbar'),
+#  colorscale='Viridis',
+#  reversescale =T))
 
 
 
 ### 假設問題
-typhoon %>% filter()
+
 plot_ly(x = ~typhoon$Level.7_Storm_Radius_NT, y = ~typhoon$Level.10_Storm_Radius_NT, type = 'scatter', mode = 'markers')
 
 
 
-
-
+eq_df$Year %>% substring(.$originTime, 1,7)
 
 
 
@@ -223,7 +189,6 @@ plot_ly(x = ~typhoon$Level.7_Storm_Radius_NT, y = ~typhoon$Level.10_Storm_Radius
 # 2. reading the nodes in `xml`
 # Solution : Read the root node of each record first, then use `xml_find_first` & `xml_find_all`
 # If take `xml_find_all` without reading the root node of each record, will get wrong value
-
 # 3. rstudio console is displayed with the system default language
 # Solution : 
 # https://stackoverflow.com/questions/56503222/how-to-data-frame-with-different-number-of-rows-but-related-not-by/56511335#56511335

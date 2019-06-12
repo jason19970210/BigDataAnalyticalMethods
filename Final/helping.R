@@ -6,7 +6,7 @@ library(plotly)
 
 sea_level <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/sea/sea_level.xml")
 sea_temp <- read_xml("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/sea/sea_temp.xml")
-
+#rain <- read_csv("https://raw.githubusercontent.com/jason19970210/BigDataAnalyticalMethods/master/Final/Data/rain/%E4%B8%89%E5%8D%81%E5%A4%A9%E8%A7%80%E6%B8%AC%E8%B3%87%E6%96%992013%E5%B9%B410%E6%9C%88%E4%BB%BD.csv")
 
 # has data
 a <- xml_children(xml_children(sea_level))

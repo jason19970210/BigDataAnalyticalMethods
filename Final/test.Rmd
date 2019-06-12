@@ -1,15 +1,13 @@
 ---
 title: "Big Data Analytical Method Final Project"
-output:
-  md_document:
-    variant: markdown_github
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## 探討颱風、地震、海洋之間的關係
+## 探討地震、海洋之間的關係
 ### Big Data Analytical Method Final Project
 - B0544255 許懿傑
 
@@ -34,6 +32,8 @@ library(tidyverse)
 library(purrr)
 library(data.table)
 library(plotly)
+library(lubridate) # time formatting
+library(zoo) # time formatting
 ```
 
 ### Data Import
@@ -67,7 +67,6 @@ map_df(1990:2018, function(i){
   ) #end of data.frame
 }) -> eq_df
 ```
-`map_df()`
 ##### Sea Level Data
 ```{r sea_level}
 sea_level <- sea_level$Cwbopendata$dataset$location
@@ -137,23 +136,7 @@ seatemp <- select(sea_test2,
 ```
 
 #### Data 2nd Processing
-##### Re-Typing the data drame
-##### typhoon
-```{r}
-### Filter
-typhoon <- filter(typhoon_all, Year >= 1990)
-
-typhoon$Year <- as.character(typhoon$Year)
-typhoon$Alarm_Start <- as.Date(typhoon$Alarm_Start)
-typhoon$Alarm_End <- as.Date(typhoon$Alarm_End)
-typhoon$Min_Pressure_NT <- as.numeric(typhoon$Min_Pressure_NT)
-typhoon$Max_Wind_Speed_NT <- as.numeric(typhoon$Max_Wind_Speed_NT)
-typhoon$Level.7_Storm_Radius_NT <- as.numeric(typhoon$Level.7_Storm_Radius_NT)
-typhoon$Level.10_Storm_Radius_NT <- as.numeric(typhoon$Level.10_Storm_Radius_NT)
-typhoon$Alarm_Counts <- as.numeric(typhoon$Alarm_Counts)
-
-typhoon[is.na(typhoon)] <- 0
-```
+##### Re-Typing & Filter
 ##### eq_df
 ```{r}
 eq_df$originTime <- as.Date(eq_df$originTime)
@@ -170,18 +153,19 @@ eq_df$erz <- as.numeric(eq_df$erz)
 ##### sea_level
 ```{r}
 sea_level$year <- as.numeric(substring(sea_level$yyyymm, 1,4))
-sea_level[,c(1,2,10,3,4,5,6,7,8,9)]
+sea_level$month <- as.numeric(substring(sea_level$yyyymm, 5,6))
 sea_level$MeanSeaLevel <- as.numeric(sea_level$MeanSeaLevel)
 sea_level$HHWL <- as.numeric(sea_level$HHWL)
 sea_level$LLWL <- as.numeric(sea_level$LLWL)
 # Without NA error message
+
+sea_level <- sea_level %>% filter(.$month != 0) %>% filter(.$year <= 2017 & .$year >= 2012)
 ```
 ##### seatemp
 ```{r}
 seatemp$lon <- as.numeric(seatemp$lon)
 seatemp$lat <- as.numeric(seatemp$lat)
 seatemp$obsrtime_year <- as.numeric(substring(seatemp$obsrtime, 1,4))
-seatemp[,c(1,2,3,4,11,5,6,7,8,9,10)]
 seatemp$MonthAvg <- as.numeric(seatemp$MonthAvg)
 seatemp$MonthHigh <- as.numeric(seatemp$MonthHigh)
 seatemp$MonthLow <- as.numeric(seatemp$MonthLow)
@@ -189,14 +173,49 @@ seatemp$MonthLow <- as.numeric(seatemp$MonthLow)
 ```
 
 
+#### New df
+```{r}
+sub_level <- sea_level %>% filter(.$SiteName %in% c("高雄市 高雄","連江縣 馬祖","基隆市 基隆","臺中市 臺中港","臺東縣 蘭嶼")) %>% as.data.table()
+sub_temp <- seatemp %>% filter(.$LocationName %in% c("高雄","馬祖","基隆","臺中港","蘭嶼"))
+data.table(sub_level)
 
+sub_level[,LocationName := ifelse(SiteName == "高雄市 高雄", "高雄", 
+                                  ifelse(SiteName == "連江縣 馬祖", "馬祖",
+                                        ifelse(SiteName == "基隆市 基隆", "基隆",
+                                               ifelse(SiteName == "臺中市 臺中港", "臺中港",
+                                                      ifelse(SiteName == "臺東縣 蘭嶼", "蘭嶼" ,"")
+                                                      )
+                                               )
+                                        )
+                                 )
+          ]
 
-
+sub_level$yyyymm <- paste0(sub_level$year,"/",sub_level$month)
+sub_level_temp <- left_join(sub_level,sub_temp, by = c("LocationName","yyyymm"="obsrtime"))
+```
 
 
 ## Including Plots
 
+### cor
+```{r,,message=F}
+cor(sub_level_temp$MeanSeaLevel, sub_level_temp$MonthAvg, use = "complete.obs")
+plot_ly(x = ~sub_level_temp$MonthAvg, y = ~sub_level_temp$MeanSeaLevel, type = 'scatter', mode = 'markers', color = ~sub_level_temp$LocationName)
+plot_ly(x = ~sub_level_temp$lat, y = ~sub_level_temp$lon, z = ~sub_level_temp$MeanSeaLevel, type = 'scatter3d', color = ~sub_level_temp$LocationName)
+# 相關係數級距：中度相關
+plot_ly(x = ~sub_level_temp$lat, y = ~sub_level_temp$lon, z = ~sub_level_temp$MonthAvg, type = 'scatter3d', color = ~sub_level_temp$LocationName)
+cor.test(sub_level_temp$MeanSeaLevel, sub_level_temp$MonthAvg, use = "complete.obs")
+
+
+sub_level_temp$ym <- gsub("/","-",sub_level_temp$yyyymm)
+sub_level_temp$ym <- as.Date(as.yearmon(sub_level_temp$ym))
+sub_level_temp %>% plot_ly(x = ~.$ym, y = ~.$MonthAvg, type = 'scatter', mode = 'lines+markers', color = ~.$LocationName)
+```
+
+
+
 ```{r pressure, echo=FALSE}
+
 
 ```
 
