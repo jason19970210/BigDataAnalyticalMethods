@@ -45,6 +45,7 @@ seatemp <- fromJSON("https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/C-B0050-
 ```
 
 #### Data 1st Processing (Make Data Frame)
+##### Earthquake data
 ```{r eq_df}
 map_df(1990:2018, function(i){
   xml_url <- read_xml(sprintf(eq_xml_url_base,i))
@@ -67,6 +68,7 @@ map_df(1990:2018, function(i){
 }) -> eq_df
 ```
 `map_df()`
+##### Sea Level Data
 ```{r sea_level}
 sea_level <- sea_level$Cwbopendata$dataset$location
 
@@ -82,8 +84,8 @@ sea_level[, LLWL_unit := ItemUnit[[.N]][3], by = number]
 
 sea_level <- select(sea_level, SiteName, SiteId, yyyymm, MeanSeaLevel, MeanSeaLevel_unit, HHWL, HHWL_unit, LLWL, LLWL_unit)
 ```
-
-```{r sea_temp}
+##### Sea Temperture Data
+```{r seatemp}
 seatemp <- seatemp$Cwbopendata$dataset$location
 
 sea_test2 <- data.frame(obsrtime = NA,
@@ -134,11 +136,63 @@ seatemp <- select(sea_test2,
                     MonthLowTime)
 ```
 
-
-### Data Filter
+#### Data 2nd Processing
+##### Re-Typing the data drame
+##### typhoon
 ```{r}
+### Filter
 typhoon <- filter(typhoon_all, Year >= 1990)
+
+typhoon$Year <- as.character(typhoon$Year)
+typhoon$Alarm_Start <- as.Date(typhoon$Alarm_Start)
+typhoon$Alarm_End <- as.Date(typhoon$Alarm_End)
+typhoon$Min_Pressure_NT <- as.numeric(typhoon$Min_Pressure_NT)
+typhoon$Max_Wind_Speed_NT <- as.numeric(typhoon$Max_Wind_Speed_NT)
+typhoon$Level.7_Storm_Radius_NT <- as.numeric(typhoon$Level.7_Storm_Radius_NT)
+typhoon$Level.10_Storm_Radius_NT <- as.numeric(typhoon$Level.10_Storm_Radius_NT)
+typhoon$Alarm_Counts <- as.numeric(typhoon$Alarm_Counts)
+
+typhoon[is.na(typhoon)] <- 0
 ```
+##### eq_df
+```{r}
+eq_df$originTime <- as.Date(eq_df$originTime)
+eq_df$epicenterLon <- as.numeric(eq_df$epicenterLon)
+eq_df$epicenterLat <- as.numeric(eq_df$epicenterLat)
+eq_df$depth <- as.numeric(eq_df$depth)
+eq_df$magnitudeValue <- as.numeric(eq_df$magnitudeValue)
+eq_df$gap <- as.numeric(eq_df$gap)
+eq_df$rms <- as.numeric(eq_df$rms)
+eq_df$erh <- as.numeric(eq_df$erh)
+eq_df$erz <- as.numeric(eq_df$erz)
+# Without NA error message
+```
+##### sea_level
+```{r}
+sea_level$year <- as.numeric(substring(sea_level$yyyymm, 1,4))
+sea_level[,c(1,2,10,3,4,5,6,7,8,9)]
+sea_level$MeanSeaLevel <- as.numeric(sea_level$MeanSeaLevel)
+sea_level$HHWL <- as.numeric(sea_level$HHWL)
+sea_level$LLWL <- as.numeric(sea_level$LLWL)
+# Without NA error message
+```
+##### seatemp
+```{r}
+seatemp$lon <- as.numeric(seatemp$lon)
+seatemp$lat <- as.numeric(seatemp$lat)
+seatemp$obsrtime_year <- as.numeric(substring(seatemp$obsrtime, 1,4))
+seatemp[,c(1,2,3,4,11,5,6,7,8,9,10)]
+seatemp$MonthAvg <- as.numeric(seatemp$MonthAvg)
+seatemp$MonthHigh <- as.numeric(seatemp$MonthHigh)
+seatemp$MonthLow <- as.numeric(seatemp$MonthLow)
+# Without NA error message
+```
+
+
+
+
+
+
 
 ## Including Plots
 
