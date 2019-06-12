@@ -82,6 +82,38 @@ map_df(1990:2018, function(i){
 
 
 
+# Transfer many xml files to data frame
+map_df(1990:2018, function(i){
+  xml_url <- read_xml(sprintf(xml_url_base,i))
+  eqinfo <- xml_find_all(xml_url, ".//earthquakeinfo")
+  
+  #tibble::tibble
+  data.frame(originTime = xml_text(xml_find_first(eqinfo, ".//originTime")),
+             epicenterLon = xml_text(xml_find_first(eqinfo, ".//epicenterLon")),
+             epicenterLat = xml_text(xml_find_first(eqinfo, ".//epicenterLat")),
+             depth = xml_text(xml_find_first(eqinfo, ".//depth")),
+             magnitudeValue = xml_text(xml_find_first(eqinfo, ".//magnitudeValue")),
+             #stationNumber = xml_text(xml_find_first(eqinfo, ".//stationNumber")),
+             #phaseNumber = xml_text(xml_find_first(eqinfo, "./phaseNumber")),
+             #minimumDistance = xml_text(xml_find_first(eqinfo, "./minimumDistance")),
+             gap = xml_text(xml_find_first(eqinfo, "./gap")),
+             rms = xml_text(xml_find_first(eqinfo, "./rms")),
+             erh = xml_text(xml_find_first(eqinfo, "./erh")),
+             erz = xml_text(xml_find_first(eqinfo, "./erz")),
+             quality = xml_text(xml_find_first(eqinfo, "./quality")),
+             #reviewStatus = xml_text(xml_find_first(eqinfo, "./reviewStatus")),
+             
+             stringsAsFactors = FALSE   #doesnt have this parameter in tibble
+  ) #end of data.frame
+}) -> eq_df
+
+
+
+
+
+
+
+
 # Data pre-Filter
 typhoon <- filter(typhoon_all, Year >= 1990)
 
