@@ -1,5 +1,5 @@
 ---
-title: "Big Data Analytical Method Final Project"
+title: "探討地震與海洋之間的關係"
 output: html_document
 ---
 
@@ -7,8 +7,9 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## 探討地震、海洋之間的關係
 ### Big Data Analytical Method Final Project
+- 針對 2012 - 2017 年的資料
+- 資料來源： [中央氣象局](https://opendata.cwb.gov.tw/)  
 - B0544255 許懿傑
 
 ### Dev. Environment & Software
@@ -18,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
   - RStudio v1.2.1335
 
 ### FAQ
-![Sli.do_room](https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png)
+![#R889](https://raw.githubusercontent.com/jason19970210/MarkdownPhotos/master/45.png)
 
 ----
 
@@ -46,8 +47,8 @@ seatemp <- fromJSON("https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/C-B0050-
 
 #### Data 1st Processing (Make Data Frame)
 ##### Earthquake data
-```{r eq_df}
-map_df(1990:2018, function(i){
+```{r, eq_df}
+map_df(2012:2017, function(i){
   xml_url <- read_xml(sprintf(eq_xml_url_base,i))
   eqinfo <- xml_find_all(xml_url, ".//earthquakeinfo")
   
@@ -68,7 +69,7 @@ map_df(1990:2018, function(i){
 }) -> eq_df
 ```
 ##### Sea Level Data
-```{r sea_level}
+```{r, sea_level}
 sea_level <- sea_level$Cwbopendata$dataset$location
 
 sea_level <- data.table(sea_level)
@@ -84,7 +85,7 @@ sea_level[, LLWL_unit := ItemUnit[[.N]][3], by = number]
 sea_level <- select(sea_level, SiteName, SiteId, yyyymm, MeanSeaLevel, MeanSeaLevel_unit, HHWL, HHWL_unit, LLWL, LLWL_unit)
 ```
 ##### Sea Temperture Data
-```{r seatemp}
+```{r, seatemp}
 seatemp <- seatemp$Cwbopendata$dataset$location
 
 sea_test2 <- data.frame(obsrtime = NA,
@@ -138,7 +139,7 @@ seatemp <- select(sea_test2,
 #### Data 2nd Processing
 ##### Re-Typing & Filter
 ##### eq_df
-```{r}
+```{r, eq_df_retyping}
 eq_df$originTime <- as.Date(eq_df$originTime)
 eq_df$epicenterLon <- as.numeric(eq_df$epicenterLon)
 eq_df$epicenterLat <- as.numeric(eq_df$epicenterLat)
@@ -148,10 +149,14 @@ eq_df$gap <- as.numeric(eq_df$gap)
 eq_df$rms <- as.numeric(eq_df$rms)
 eq_df$erh <- as.numeric(eq_df$erh)
 eq_df$erz <- as.numeric(eq_df$erz)
+
+eq_df$year <- as.numeric(substring(eq_df$originTime, 1,4))
+eq_df$month <- as.numeric(substring(eq_df$originTime, 6,7))
+eq_df$ym <- paste0(eq_df$year,"/",eq_df$month)
 # Without NA error message
 ```
 ##### sea_level
-```{r}
+```{r, sea_level_retyping}
 sea_level$year <- as.numeric(substring(sea_level$yyyymm, 1,4))
 sea_level$month <- as.numeric(substring(sea_level$yyyymm, 5,6))
 sea_level$MeanSeaLevel <- as.numeric(sea_level$MeanSeaLevel)
@@ -162,7 +167,7 @@ sea_level$LLWL <- as.numeric(sea_level$LLWL)
 sea_level <- sea_level %>% filter(.$month != 0) %>% filter(.$year <= 2017 & .$year >= 2012)
 ```
 ##### seatemp
-```{r}
+```{r, seatemp_retyping}
 seatemp$lon <- as.numeric(seatemp$lon)
 seatemp$lat <- as.numeric(seatemp$lat)
 seatemp$obsrtime_year <- as.numeric(substring(seatemp$obsrtime, 1,4))
@@ -174,7 +179,7 @@ seatemp$MonthLow <- as.numeric(seatemp$MonthLow)
 
 
 #### New df
-```{r}
+```{r, message=F,warning=F}
 sub_level <- sea_level %>% filter(.$SiteName %in% c("高雄市 高雄","連江縣 馬祖","基隆市 基隆","臺中市 臺中港","臺東縣 蘭嶼")) %>% as.data.table()
 sub_temp <- seatemp %>% filter(.$LocationName %in% c("高雄","馬祖","基隆","臺中港","蘭嶼"))
 data.table(sub_level)
@@ -192,35 +197,124 @@ sub_level[,LocationName := ifelse(SiteName == "高雄市 高雄", "高雄",
 
 sub_level$yyyymm <- paste0(sub_level$year,"/",sub_level$month)
 sub_level_temp <- left_join(sub_level,sub_temp, by = c("LocationName","yyyymm"="obsrtime"))
-```
-
-
-## Including Plots
-
-### cor
-```{r,,message=F}
-cor(sub_level_temp$MeanSeaLevel, sub_level_temp$MonthAvg, use = "complete.obs")
-plot_ly(x = ~sub_level_temp$MonthAvg, y = ~sub_level_temp$MeanSeaLevel, type = 'scatter', mode = 'markers', color = ~sub_level_temp$LocationName)
-plot_ly(x = ~sub_level_temp$lat, y = ~sub_level_temp$lon, z = ~sub_level_temp$MeanSeaLevel, type = 'scatter3d', color = ~sub_level_temp$LocationName)
-# 相關係數級距：中度相關
-plot_ly(x = ~sub_level_temp$lat, y = ~sub_level_temp$lon, z = ~sub_level_temp$MonthAvg, type = 'scatter3d', color = ~sub_level_temp$LocationName)
-cor.test(sub_level_temp$MeanSeaLevel, sub_level_temp$MonthAvg, use = "complete.obs")
-
 
 sub_level_temp$ym <- gsub("/","-",sub_level_temp$yyyymm)
 sub_level_temp$ym <- as.Date(as.yearmon(sub_level_temp$ym))
-sub_level_temp %>% plot_ly(x = ~.$ym, y = ~.$MonthAvg, type = 'scatter', mode = 'lines+markers', color = ~.$LocationName)
+sub_level_temp['nag_lat'] <- -sub_level_temp['lat']
+```
+
+```{r, eq_new_df, warning=F}
+eq_level_temp <- left_join(eq_df, sub_level_temp, by = c("ym"="yyyymm"))
+```
+
+## Plots & Statics
+
+### 相關係數說明：
+- 1.0 = 完全相關  
+- 0.7 ~ 0.99 = 高度相關  
+- 0.4 ~ 0.69 = 中度相關  
+- 0.1 ~ 0.39 = 低度相關  
+- 0.1 以下 = 無相關  
+
+```{r cor_}
+# `complete.obs` avoid the NA value
+# `p-value` : 假設檢定、虛無假設 (Null Hypothesis, H0)
+cor.test(sub_level_temp$MeanSeaLevel, sub_level_temp$MonthAvg, use = "complete.obs")
+t.test(sub_level_temp$MeanSeaLevel , sub_level_temp$MonthAvg)
 ```
 
 
 
-```{r pressure, echo=FALSE}
+```{r, sub_level_temp_plots, warning=F}
+plot_ly(x = ~sub_level_temp$MonthAvg, y = ~sub_level_temp$MeanSeaLevel, type = 'scatter', mode = 'markers', color = ~sub_level_temp$LocationName)
 
+time_temp <- sub_level_temp %>% plot_ly(x = ~.$ym, y = ~.$MonthAvg, type = 'scatter', mode = 'lines+markers', color = ~.$LocationName)
+time_level <- sub_level_temp %>% plot_ly(x = ~.$ym, y = ~.$MeanSeaLevel, type = 'scatter', mode = 'lines+markers', color = ~.$LocationName)
+subplot(time_temp,time_level,nrows = 2)
 
+plot_ly(x = ~sub_level_temp$nag_lat, y = ~sub_level_temp$lon, z = ~sub_level_temp$MeanSeaLevel, type = 'scatter3d', mode = 'markers', color = ~sub_level_temp$LocationName)
+```
+
+```{r, eq_location_value, warning=F}
+lon_value <- plot_ly(x = ~eq_df$epicenterLon, y = ~eq_df$magnitudeValue, name = "Lon", type = 'scatter', mode = 'markers')
+lat_value <- plot_ly(x = ~eq_df$magnitudeValue, y = ~eq_df$epicenterLat, name = "Lat", type = 'scatter', mode = 'markers')
+subplot(lon_value,lat_value)
 ```
 
 
-```{r, message= F, warning=F}
 
+
+```{r}
+t1 <- eq_level_temp %>% group_by(ym) %>% summarise(eqrthquake = n(),
+                                                   Value = mean(magnitudeValue),
+                                                   Depth = mean(depth),
+                                                   Level = mean(MeanSeaLevel),
+                                                   Temp = mean(MonthAvg))
+t1$Year <- substring(t1$ym,1,4)
 ```
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+```{r}
+plot_ly(x = ~t1$Depth, y = ~t1$Value, type = "scatter", mode = 'markers')
+ggplotly(ggplot(t1, aes(x = Depth, y = Value)) + geom_point() + geom_smooth())
+
+subplot(plot_ly(x = ~t1$ym, y = ~t1$Value, name = "Value", type = 'scatter', mode = 'lines'),
+        plot_ly(x = ~t1$ym, y = ~t1$Depth, name = "Depth", type = 'scatter', mode = 'lines'),
+        plot_ly(x = ~t1$ym, y = ~t1$eqrthquake, name = "num", type = 'scatter', mode = 'lines'),
+        nrows = 3)
+a <- t1 %>% plot_ly(x = ~.$ym, y = ~.$eqrthquake, name = "Num", type = 'scatter', mode = 'lines')
+b <- t1 %>% plot_ly(x = ~.$ym, y = ~.$Value, name = "Value", type = 'scatter', mode = 'lines')
+c <- t1 %>% plot_ly(x = ~.$ym, y = ~.$Depth, name = "Depth", type = 'scatter', mode = 'lines')
+d <- t1 %>% plot_ly(x = ~.$ym, y = ~.$Level, name = "Level", type = 'scatter', mode = 'lines')
+e <- t1 %>% plot_ly(x = ~.$ym, y = ~.$Temp, name = "Temp", type = 'scatter', mode = 'lines')
+t1 %>% plot_ly(x = ~.$Level, y = ~.$Temp, z = ~.$Depth, type = 'scatter3d', mode = 'markers', color = .$Value)
+```
+
+## Compare
+```{r}
+subplot(a,b, nrows = 2)
+cor.test(t1$eqrthquake, t1$Value, use = "complete.obs")
+subplot(a,c,nrows = 2)
+cor.test(t1$eqrthquake, t1$Depth, use = "complete.obs")
+subplot(a,d,nrows = 2)
+cor.test(t1$eqrthquake, t1$Level, use = "complete.obs")
+subplot(a,e,nrows = 2)
+cor.test(t1$eqrthquake, t1$Temp, use = "complete.obs")
+```
+
+
+```{r}
+subplot(b,c, nrows = 2)
+cor.test(t1$Value, t1$Depth, use = "complete.obs")
+subplot(b,d, nrows = 2)
+cor.test(t1$Value, t1$Level, use = "complete.obs")
+subplot(b,e, nrows = 2)
+cor.test(t1$Value, t1$Temp, use = "complete.obs")
+```
+
+```{r}
+subplot(c,d, nrows = 2)
+cor.test(t1$Depth, t1$Level, use = "complete.obs")
+subplot(c,e, nrows = 2)
+cor.test(t1$Depth, t1$Temp, use = "complete.obs")
+subplot(d,e, nrows = 2)
+cor.test(t1$Level, t1$Temp, use = "complete.obs")
+```
+
+### Conclution
+1. 海平面與海水溫度有著很大的相關性，反觀地震與海洋之間的關聯性很低
+2. 針對地震資料來看，深度與規模的相關係數也只有 0.072，屬於無相關
+3. 統計要好好學!
+
+### Problems & Solutions
+1. cannot get the table data from website "https://rdc28.cwb.gov.tw/TDB/public/warning_typhoon_list/"  
+Solution: Manually copy and paste to `Numbers` then export to `csv` file
+2. reading the nodes in `xml`  
+Solution : Read the root node of each record first, then use `xml_find_first` & `xml_find_all`
+If take `xml_find_all` without reading the root node of each record, will get wrong value
+3. rstudio console is displayed with the system default language  
+Solution : https://stackoverflow.com/questions/56503222/how-to-data-frame-with-different-number-of-rows-but-related-not-by/56511335#56511335
+4. reading xml file using `xml_find_all` but nothing is pull out!  
+Solution : get the `JSON` file for rapid using.
+
+
