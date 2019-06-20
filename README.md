@@ -4,6 +4,8 @@
 + 曾意儒
 + github.com/CGUIM-BigDataAnalysis/BigDataCGUIM/blob/master/107/04_R_Prog_101.md
 + 期中考：2019/04/25
++ 助教：邱業詠
++ E-mail:lawrance39@gmail.com
 
 ### Big Data 4V
 + Volume 數據產生的量

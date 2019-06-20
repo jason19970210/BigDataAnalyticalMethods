@@ -210,10 +210,10 @@ eq_level_temp <- left_join(eq_df, sub_level_temp, by = c("ym"="yyyymm"))
 ## Plots & Statics
 
 ### 相關係數說明：
-- 1.0 = 完全相關  
-- 0.7 ~ 0.99 = 高度相關  
-- 0.4 ~ 0.69 = 中度相關  
-- 0.1 ~ 0.39 = 低度相關  
+- 1.0 = 完全正相關  
+- 0.7 ~ 0.99 = 高度正相關  
+- 0.4 ~ 0.69 = 中度正相關  
+- 0.1 ~ 0.39 = 低度正相關  
 - 0.1 以下 = 無相關  
 
 ```{r cor_}
@@ -301,9 +301,16 @@ subplot(d,e, nrows = 2)
 cor.test(t1$Level, t1$Temp, use = "complete.obs")
 ```
 
+
 ### Conclution
 1. 海平面與海水溫度有著很大的相關性，反觀地震與海洋之間的關聯性很低
-2. 針對地震資料來看，深度與規模的相關係數也只有 0.072，屬於無相關
+2. 針對地震資料來看，深度與規模的相關係數也只有 0.073，屬於無相關
+```{r, echo=F}
+plot_ly(x = ~eq_df$depth, y = ~eq_df$magnitudeValue, type = 'scatter', mode = 'markers')
+ggplotly(ggplot(eq_df, aes(x = depth, y = magnitudeValue)) + geom_point() + geom_smooth())
+cor(eq_df$depth, eq_df$magnitudeValue)
+eq_df %>% filter(.$erz < 24) %>% plot_ly(x = ~.$erh, y = ~.$erz, z = ~.$rms,  type = 'scatter3d' , mode = 'markers', color = .$magnitudeValue )
+```
 3. 統計要好好學!
 
 ### Problems & Solutions
@@ -311,7 +318,8 @@ cor.test(t1$Level, t1$Temp, use = "complete.obs")
 Solution: Manually copy and paste to `Numbers` then export to `csv` file
 2. reading the nodes in `xml`  
 Solution : Read the root node of each record first, then use `xml_find_first` & `xml_find_all`
-If take `xml_find_all` without reading the root node of each record, will get wrong value
+If take `xml_find_all` without reading the root node of each record, will get wrong value  
+[Stacloverflow_IssuePost](https://stackoverflow.com/questions/56503222/how-to-data-frame-with-different-number-of-rows-but-related-not-by/56511335?noredirect=1#comment99609715_56511335)
 3. rstudio console is displayed with the system default language  
 Solution : https://stackoverflow.com/questions/56503222/how-to-data-frame-with-different-number-of-rows-but-related-not-by/56511335#56511335
 4. reading xml file using `xml_find_all` but nothing is pull out!  

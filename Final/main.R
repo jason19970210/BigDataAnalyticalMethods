@@ -178,7 +178,7 @@ plot_ly(x = ~typhoon$Level.7_Storm_Radius_NT, y = ~typhoon$Level.10_Storm_Radius
 
 eq_df$Year %>% substring(.$originTime, 1,7)
 
-
+eq_level_temp_typhoon %>% filter(.$Level.7_Storm_Radius_NT >= 0 & .$Level.10_Storm_Radius_NT >= 0) %>% ggplot(aes(x = Level.7_Storm_Radius_NT, y = Level.10_Storm_Radius_NT)) + geom_point() + geom_smooth()
 
 
 
@@ -192,4 +192,4 @@ eq_df$Year %>% substring(.$originTime, 1,7)
 # 3. rstudio console is displayed with the system default language
 # Solution : 
 # https://stackoverflow.com/questions/56503222/how-to-data-frame-with-different-number-of-rows-but-related-not-by/56511335#56511335
-
+# 4. rstudio variable issue: after running some `retyping` code, the attribute of data frame disappeared
