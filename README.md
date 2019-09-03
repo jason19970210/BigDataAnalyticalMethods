@@ -22,6 +22,9 @@
 ## R Lang.
 [pref_pdf_R_in_a_nutshell](http://rbasicsworkshop.weebly.com/uploads/1/8/6/0/18603232/adler_2009_r-inanutshell.pdf)
 
+## R Markdown
+[R Markdown Chunk Examples](https://medium.com/datainpoint/rmarkdown-%E5%B7%A7%E5%A6%99%E5%9C%B0%E5%9C%A8%E6%96%87%E4%BB%B6%E4%B8%AD%E5%B5%8C%E5%85%A5%E7%A8%8B%E5%BC%8F-b4144b08582d)
+
 ### Comment
 Using `#`
 
